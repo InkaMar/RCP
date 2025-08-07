@@ -1,0 +1,2258 @@
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithCustomToken, onAuthStateChanged, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, updateDoc, deleteDoc, getDocs, query, where, writeBatch, getDoc } from 'firebase/firestore'; 
+import { History, X, PlusCircle, Trash2, Edit2, Calendar, FileText, ChevronLeft, ChevronRight, Home, Users, Briefcase, MinusCircle, UserPlus, CircleMinus, AlertTriangle, LogIn, LogOut } from 'lucide-react';
+import dayjs from 'dayjs';
+import 'dayjs/locale/pl';
+import isBetween from 'dayjs/plugin/isBetween';
+import duration from 'dayjs/plugin/duration';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+
+dayjs.locale('pl');
+dayjs.extend(isBetween);
+dayjs.extend(duration);
+dayjs.extend(isSameOrBefore);
+
+// Komponent modalny (wbudowany, aby utrzymać kod w jednym pliku)
+const ModalComponent = ({ show, title, onClose, onConfirm, children, confirmButtonText = "Potwierdź", cancelButtonText = "Anulaj" }) => {
+  if (!show) return null;
+  return (
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full flex items-center justify-center z-50 p-4 font-sans transition-opacity duration-300 ease-in-out">
+      <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-lg transition-transform duration-300 ease-in-out scale-95">
+        <div className="flex justify-between items-center pb-4 border-b border-gray-200">
+          <h3 className="text-2xl font-bold text-gray-800">{title}</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-3xl leading-none transition-colors">&times;</button>
+        </div>
+        <div className="my-6 text-gray-700 max-h-[70vh] overflow-y-auto pr-2">
+          {children}
+        </div>
+        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+          <button type="button" onClick={onClose} className="px-5 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-medium">{cancelButtonText}</button>
+          {onConfirm && (
+            <button type="button" onClick={onConfirm} className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">{confirmButtonText}</button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Main App component
+const App = () => {
+  console.log("App component rendered.");
+
+  // Application data states
+  const [employees, setEmployees] = useState([]);
+  const [groups, setGroups] = useState([]);
+  const [absences, setAbsences] = useState([]);
+  const [workHours, setWorkHours] = useState([]);
+  const [currentPage, setCurrentPage] = useState('home');
+  const [isAuthReady, setIsAuthReady] = useState(false);
+  const [userId, setUserId] = useState(null);
+  const [db, setDb] = useState(null);
+  const [auth, setAuth] = useState(null);
+  const [userRole, setUserRole] = useState(null); // New state for user role
+  const [authMode, setAuthMode] = useState('login'); // 'login', 'register', 'app'
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loadingAuth, setLoadingAuth] = useState(false);
+
+
+  // Modal states
+  const [showEmployeeModal, setShowEmployeeModal] = useState(false);
+  const [editingEmployee, setEditingEmployee] = useState(null);
+  const [showEmployeeActivityModal, setShowEmployeeActivityModal] = useState(false);
+  const [selectedEmployeeForActivity, setSelectedEmployeeForActivity] = useState(null);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [selectedEmployeeHistory, setSelectedEmployeeHistory] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmModalData, setConfirmModalData] = useState({});
+  const [showAlertModal, setShowAlertModal] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [showAddAbsenceModal, setShowAddAbsenceModal] = useState(false);
+  const [editingAbsence, setEditingAbsence] = useState(null);
+  const [showEditWorkHourModal, setShowEditWorkHourModal] = useState(false);
+  const [editingWorkHour, setEditingWorkHour] = useState(null);
+
+
+  // Employee form state
+  const [employeeFormState, setEmployeeFormState] = useState({
+    imie: '', nazwisko: '', nazwa: '', groupId: '', start: '', end: ''
+  });
+
+  // Calendar states for employee activity modal
+  const [currentEmployeeActivityCalendarDate, setCurrentEmployeeActivityCalendarDate] = useState(new Date());
+  const [selectedDateForActivityDetails, setSelectedDateForActivityDetails] = useState(null);
+
+  // Filter states
+  const [employeeFilter, setEmployeeFilter] = useState('all');
+  const [absenceEmployeeFilter, setAbsenceEmployeeFilter] = useState('all');
+  const [absenceTypeFilter, setAbsenceTypeFilter] = useState('all');
+  const [absenceDateStartFilter, setAbsenceDateStartFilter] = useState('');
+  const [absenceDateEndFilter, setAbsenceDateEndFilter] = useState('');
+
+  // Work Time Registration states
+  const [selectedWorkDate, setSelectedWorkDate] = useState(dayjs().format('YYYY-MM-DD'));
+  const [shiftTypeInput, setShiftTypeInput] = useState('poranna');
+  const [globalStartTime, setGlobalStartTime] = useState('06:00');
+  const [globalEndTime, setGlobalEndTime] = useState('14:00');
+  const [selectedGroupsForRegistration, setSelectedGroupsForRegistration] = useState([]);
+  const [employeesForRegistration, setEmployeesForRegistration] = useState([]);
+  const [workTimeCalendarDate, setWorkTimeCalendarDate] = useState(new Date());
+  const [selectedDayWorkDetails, setSelectedDayWorkDetails] = useState([]);
+
+
+  // Reports page states
+  const [reportStartDate, setReportStartDate] = useState('');
+  const [reportEndDate, setReportEndDate] = useState('');
+  const [reportFilterType, setReportFilterType] = useState('all');
+  const [reportSelectedGroups, setReportSelectedGroups] = useState([]);
+  const [reportSelectedEmployee, setReportSelectedEmployee] = useState('');
+  const [reportData, setReportData] = useState(null);
+  const [reportGenerated, setReportGenerated] = useState(false);
+
+
+  // Constants
+  const UNASSIGNED_GROUP_NAME = 'Pracownicy nieprzypisani do grup';
+  const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+  const SHIFT_HOURS = {
+    poranna: { start: '06:00', end: '14:00' },
+    popołudniowa: { start: '14:00', end: '22:00' },
+  };
+
+  // Helper to check user roles
+  const checkUserRole = useCallback((roles) => {
+    if (!userRole) return false;
+    if (userRole === 'admin') return true; // Admin has all access
+    return roles.includes(userRole);
+  }, [userRole]);
+
+  // Firebase initialization and authentication
+  useEffect(() => {
+    console.log("Firebase useEffect triggered.");
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+    const app = initializeApp(firebaseConfig);
+    const firestore = getFirestore(app);
+    const authInstance = getAuth(app);
+    setDb(firestore);
+    setAuth(authInstance);
+
+    let isInitialCheckComplete = false; // Flag to ensure isAuthReady is set only once after initial check
+
+    const unsubscribe = onAuthStateChanged(authInstance, async (user) => {
+      console.log("onAuthStateChanged callback. User:", user);
+      if (user) {
+        setUserId(user.uid);
+        const userRoleDocRef = doc(firestore, `/artifacts/${appId}/users/${user.uid}/userRoles`, user.uid);
+        const userRoleDoc = await getDoc(userRoleDocRef);
+        if (userRoleDoc.exists()) {
+          setUserRole(userRoleDoc.data().role);
+        } else {
+          await setDoc(userRoleDocRef, { role: 'gosc' });
+          setUserRole('gosc');
+        }
+        setAuthMode('app');
+      } else {
+        setAuthMode('login');
+        setUserRole(null);
+        setUserId(null);
+      }
+      // Set isAuthReady to true only after the first auth state determination
+      if (!isInitialCheckComplete) {
+        setIsAuthReady(true);
+        isInitialCheckComplete = true;
+        console.log("setIsAuthReady(true) called from onAuthStateChanged (initial check).");
+      }
+    });
+
+    // Attempt initial sign-in with custom token provided by Canvas
+    const tryCustomSignIn = async () => {
+      if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+        console.log("Attempting to sign in with custom token.");
+        try {
+          await signInWithCustomToken(authInstance, __initial_auth_token);
+        } catch (error) {
+          console.error("Error during initial custom token sign-in:", error);
+          // onAuthStateChanged will handle the resulting null user state.
+        }
+      } else {
+        console.log("No initial auth token found, onAuthStateChanged will determine initial state.");
+        // If no token, onAuthStateChanged will fire with user=null, and set isAuthReady.
+      }
+    };
+
+    tryCustomSignIn();
+
+    return () => unsubscribe();
+  }, []);
+
+  // Firestore data subscription
+  useEffect(() => {
+    console.log("Firestore data subscription useEffect triggered. isAuthReady:", isAuthReady, "db:", db, "userId:", userId);
+    if (!isAuthReady || !db || !userId) return;
+
+    const employeesPath = `/artifacts/${appId}/users/${userId}/employees`;
+    const groupsPath = `/artifacts/${appId}/users/${userId}/groups`;
+    const absencesPath = `/artifacts/${appId}/users/${userId}/absences`;
+    const workHoursPath = `/artifacts/${appId}/users/${userId}/workHours`;
+
+    const employeeUnsub = onSnapshot(collection(db, employeesPath), (snapshot) => {
+      const employeesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      employeesData.sort((a, b) => a.nazwisko.localeCompare(b.nazwisko, 'pl', { sensitivity: 'base' }));
+      setEmployees(employeesData);
+      console.log("Employees data updated:", employeesData);
+    });
+
+    const groupsUnsub = onSnapshot(collection(db, groupsPath), (snapshot) => {
+      const groupsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setGroups(groupsData);
+      console.log("Groups data updated:", groupsData);
+    });
+
+    const absencesUnsub = onSnapshot(collection(db, absencesPath), (snapshot) => {
+      const absencesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setAbsences(absencesData);
+      console.log("Absences data updated:", absencesData);
+    });
+
+    const workHoursUnsub = onSnapshot(collection(db, workHoursPath), (snapshot) => {
+      const workHoursData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setWorkHours(workHoursData);
+      console.log("WorkHours data updated:", workHoursData);
+    });
+
+    return () => {
+      employeeUnsub();
+      groupsUnsub();
+      absencesUnsub();
+      workHoursUnsub();
+    };
+  }, [isAuthReady, db, userId, appId]);
+
+  const updateUnassignedAlert = useCallback(() => {
+    const unassignedCount = employees.filter(emp => !emp.groupId).length;
+    return unassignedCount;
+  }, [employees]);
+
+  const employeesWithIrregularities = useMemo(() => {
+    const irregularEmployees = new Set();
+    employees.forEach(employee => {
+      const employeeWorkHours = workHours.filter(wh => wh.employeeId === employee.id && wh.isPresent);
+      const employeeAbsences = absences.filter(abs => abs.employeeId === employee.id);
+
+      employeeWorkHours.forEach(work => {
+        const workDate = dayjs(work.date);
+        const hasOverlapAbsence = employeeAbsences.some(abs => {
+          const absenceStart = dayjs(abs.startDate);
+          const absenceEnd = dayjs(abs.endDate);
+          return workDate.isBetween(absenceStart, absenceEnd, null, '[]');
+        });
+        if (hasOverlapAbsence) {
+          irregularEmployees.add(employee.id);
+        }
+      });
+    });
+    return Array.from(irregularEmployees);
+  }, [employees, workHours, absences]);
+
+  const employeesWithoutGroup = useMemo(() => {
+    return employees.filter(emp => !emp.groupId).map(emp => emp.id);
+  }, [employees]);
+
+  // Auth Handlers
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoadingAuth(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      showAlert("Zalogowano pomyślnie!");
+    } catch (error) {
+      console.error("Błąd logowania:", error.message);
+      showAlert(`Błąd logowania: ${error.message}`);
+    } finally {
+      setLoadingAuth(false);
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setLoadingAuth(true);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const newUserId = userCredential.user.uid;
+      // Assign default role 'gosc' to new users
+      await setDoc(doc(db, `/artifacts/${appId}/users/${newUserId}/userRoles`, newUserId), { role: 'gosc' });
+      showAlert("Rejestracja pomyślna! Zalogowano jako gość.");
+    } catch (error) {
+      console.error("Błąd rejestracji:", error.message);
+      showAlert(`Błąd rejestracji: ${error.message}`);
+    } finally {
+      setLoadingAuth(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      showAlert("Wylogowano pomyślnie.");
+      setAuthMode('login');
+      setUserRole(null);
+      setUserId(null);
+    } catch (error) {
+      console.error("Błąd wylogowania:", error.message);
+      showAlert(`Błąd wylogowania: ${error.message}`);
+    }
+  };
+
+  // Modal handlers
+  const openEmployeeModal = (employee = null) => {
+    if (!checkUserRole(['admin', 'hr'])) {
+      showAlert("Brak uprawnień do dodawania/edycji pracowników.");
+      return;
+    }
+    setEditingEmployee(employee);
+    if (employee) {
+      setEmployeeFormState({
+        imie: employee.imie,
+        nazwisko: employee.nazwisko,
+        nazwa: employee.nazwa,
+        groupId: employee.groupId || '',
+        start: employee.start,
+        end: employee.end
+      });
+    } else {
+      setEmployeeFormState({
+        imie: '', nazwisko: '', nazwa: '', groupId: '', start: '', end: ''
+      });
+    }
+    setShowEmployeeModal(true);
+  };
+
+  const handleEmployeeFormChange = (e) => {
+    const { name, value } = e.target;
+    setEmployeeFormState(prevState => {
+      const newState = { ...prevState, [name]: value };
+      if ((name === 'imie' || name === 'nazwisko')) {
+        const { imie, nazwisko, nazwa } = newState;
+        const autoNazwa = `${imie} ${nazwisko ? nazwisko.charAt(0) : ''}`.trim();
+        if (nazwa === '' || nazwa === `${prevState.imie} ${prevState.nazwisko.charAt(0)}`.trim()) {
+          newState.nazwa = autoNazwa;
+        }
+      }
+      return newState;
+    });
+  };
+
+  const openEmployeeActivityModal = (employeeId) => {
+    const employee = employees.find(e => e.id === employeeId);
+    if (!employee) return;
+    setSelectedEmployeeForActivity(employee);
+    setCurrentEmployeeActivityCalendarDate(new Date());
+    setSelectedDateForActivityDetails(dayjs().format('YYYY-MM-DD'));
+    setShowEmployeeActivityModal(true);
+  };
+
+  const openHistoryModal = (employeeId) => {
+    const employee = employees.find(e => e.id === employeeId);
+    if (!employee) return;
+    setSelectedEmployeeHistory(employee);
+    setShowHistoryModal(true);
+  };
+
+  const closeModals = () => {
+    setShowEmployeeModal(false);
+    setShowEmployeeActivityModal(false);
+    setShowHistoryModal(false);
+    setShowConfirmModal(false);
+    setShowAlertModal(false);
+    setShowAddAbsenceModal(false);
+    setShowEditWorkHourModal(false);
+    setEditingEmployee(null);
+    setEditingAbsence(null);
+    setEditingWorkHour(null);
+    setSelectedDateForActivityDetails(null);
+  };
+
+  const showAlert = (message) => {
+    setAlertMessage(message);
+    setShowAlertModal(true);
+  };
+
+  const showConfirm = (message, onConfirm) => {
+    setConfirmModalData({ message, onConfirm });
+    setShowConfirmModal(true);
+  };
+
+  const handleEmployeeFormSubmit = async (e) => {
+    e.preventDefault();
+    if (!checkUserRole(['admin', 'hr'])) {
+      showAlert("Brak uprawnień do zapisywania pracowników.");
+      return;
+    }
+    const newEmployeeData = {
+      nazwisko: employeeFormState.nazwisko,
+      imie: employeeFormState.imie,
+      nazwa: employeeFormState.nazwa,
+      groupId: employeeFormState.groupId || null,
+      start: employeeFormState.start,
+      end: employeeFormState.end,
+      history: editingEmployee ? editingEmployee.history : [],
+    };
+
+    try {
+      if (editingEmployee) {
+        const employeeRef = doc(db, `/artifacts/${appId}/users/${userId}/employees`, editingEmployee.id);
+        const updatedHistory = editingEmployee.history || [];
+        if (editingEmployee.groupId !== newEmployeeData.groupId) {
+          const groupName = newEmployeeData.groupId ? (groups.find(g => g.id === newEmployeeData.groupId)?.name || 'Nieznana') : UNASSIGNED_GROUP_NAME;
+          updatedHistory.push({
+            date: new Date().toISOString().slice(0, 10),
+            newGroup: groupName,
+          });
+        }
+        await updateDoc(employeeRef, { ...newEmployeeData, history: updatedHistory });
+      } else {
+        const employeesRef = collection(db, `/artifacts/${appId}/users/${userId}/employees`);
+        const groupName = newEmployeeData.groupId ? (groups.find(g => g.id === newEmployeeData.groupId)?.name || 'Nieznana') : UNASSIGNED_GROUP_NAME;
+        newEmployeeData.history.push({ date: new Date().toISOString().slice(0, 10), newGroup: groupName });
+        await addDoc(employeesRef, newEmployeeData);
+      }
+      closeModals();
+    } catch (error) {
+      console.error("Błąd podczas zapisywania pracownika: ", error);
+      showAlert("Wystąpił błąd podczas zapisywania pracownika.");
+    }
+  };
+
+  const handleDeleteEmployee = (employeeId) => {
+    if (!checkUserRole(['admin', 'hr'])) {
+      showAlert("Brak uprawnień do usuwania pracowników.");
+      return;
+    }
+    showConfirm("Czy na pewno chcesz usunąć tego pracownika? Ta operacja jest nieodwracalna.", async () => {
+      try {
+        const employeeRef = doc(db, `/artifacts/${appId}/users/${userId}/employees`, employeeId);
+        await deleteDoc(employeeRef);
+        const absencesSnapshot = await getDocs(query(collection(db, `/artifacts/${appId}/users/${userId}/absences`), where("employeeId", "==", employeeId)));
+        absencesSnapshot.forEach(async (docRef) => {
+          await deleteDoc(doc(db, `/artifacts/${appId}/users/${userId}/absences`, docRef.id));
+        });
+        const workHoursSnapshot = await getDocs(query(collection(db, `/artifacts/${appId}/users/${userId}/workHours`), where("employeeId", "==", employeeId)));
+        workHoursSnapshot.forEach(async (docRef) => {
+          await deleteDoc(doc(db, `/artifacts/${appId}/users/${userId}/workHours`, docRef.id));
+        });
+      } catch (error) {
+        console.error("Błąd podczas usuwania pracownika: ", error);
+        showAlert("Wystąpił błąd podczas usuwania pracownika.");
+      }
+    });
+  };
+
+  const handleAddGroupFormSubmit = async (e) => {
+    e.preventDefault();
+    if (!checkUserRole(['admin', 'kierownik'])) {
+      showAlert("Brak uprawnień do dodawania grup.");
+      return;
+    }
+    const newGroupName = e.target.newGroupName.value;
+    const newGroupId = newGroupName.toLowerCase().replace(/\s/g, '');
+    if (groups.find(g => g.id === newGroupId)) {
+      showAlert('Grupa o tej nazwie już istnieje!');
+      return;
+    }
+    try {
+      const groupsRef = doc(db, `/artifacts/${appId}/users/${userId}/groups`, newGroupId);
+      await setDoc(groupsRef, { name: newGroupName });
+      e.target.reset();
+    } catch (error) {
+      console.error("Błąd podczas dodawania grupy: ", error);
+      showAlert("Wystąpił błąd podczas dodawania grupy.");
+    }
+  };
+
+  const handleDeleteGroup = (groupId) => {
+    if (!checkUserRole(['admin', 'kierownik'])) {
+      showAlert("Nie można usunąć grupy, ponieważ są do niej przypisani pracownicy. Najpierw przenieś ich do innej grupy.");
+      return;
+    }
+    const groupEmployees = employees.filter(emp => emp.groupId === groupId);
+    if (groupEmployees.length > 0) {
+      showAlert("Nie można usunąć grupy, ponieważ są do niej przypisani pracownicy. Najpierw przenieś ich do innej grupy.");
+    } else {
+      showConfirm(`Czy na pewno chcesz usunąć grupę "${groups.find(g => g.id === groupId)?.name}"?`, async () => {
+        try {
+          const groupRef = doc(db, `/artifacts/${appId}/users/${userId}/groups`, groupId);
+          await deleteDoc(groupRef);
+          closeModals();
+        } catch (error) {
+          console.error("Błąd podczas usuwania grupy: ", error);
+          showAlert("Wystąpił błąd podczas usuwania grupy.");
+        }
+      });
+    }
+  };
+
+  const handleSaveGroupChange = async (employeeId, newGroupId) => {
+    if (!checkUserRole(['admin', 'hr', 'kierownik'])) {
+      showAlert("Brak uprawnień do zmiany grupy pracownika.");
+      return;
+    }
+    const employee = employees.find(emp => emp.id === employeeId);
+    if (!employee || employee.groupId === newGroupId) return;
+
+    try {
+      const employeeRef = doc(db, `/artifacts/${appId}/users/${userId}/employees`, employee.id);
+      const updatedHistory = employee.history || [];
+      const groupName = newGroupId ? (groups.find(g => g.id === newGroupId)?.name || 'Nieznana') : UNASSIGNED_GROUP_NAME;
+      updatedHistory.push({ date: new Date().toISOString().slice(0, 10), newGroup: groupName });
+
+      await updateDoc(employeeRef, {
+        groupId: newGroupId || null,
+        history: updatedHistory,
+      });
+    } catch (error) {
+      console.error("Błąd podczas zmiany grupy: ", error);
+      showAlert("Wystąpił błąd podczas zmiany grupy pracownika.");
+    }
+  };
+
+  const handleAbsenceFormSubmit = async (e) => {
+    e.preventDefault();
+    if (!checkUserRole(['admin', 'hr'])) {
+      showAlert("Brak uprawnień do zapisywania nieobecności.");
+      return;
+    }
+    const form = e.target;
+    const formData = new FormData(form);
+    const absenceData = {
+      employeeId: formData.get('absenceEmployee'),
+      type: formData.get('absenceType'),
+      startDate: formData.get('absenceStart'),
+      endDate: formData.get('absenceEnd'),
+    };
+
+    try {
+      if (editingAbsence) {
+        const absenceRef = doc(db, `/artifacts/${appId}/users/${userId}/absences`, editingAbsence.id);
+        await updateDoc(absenceRef, absenceData);
+        showAlert('Absencja została pomyślnie zaktualizowana.');
+      } else {
+        const absencesRef = collection(db, `/artifacts/${appId}/users/${userId}/absences`);
+        await addDoc(absencesRef, absenceData);
+        showAlert('Absencja została pomyślnie dodana.');
+      }
+      closeModals();
+    } catch (error) {
+      console.error("Błąd podczas zapisywania nieobecności: ", error);
+      showAlert("Wystąpił błąd podczas zapisywania nieobecności.");
+    }
+  };
+
+  const openAddAbsenceModal = (absence = null) => {
+    if (!checkUserRole(['admin', 'hr'])) {
+      showAlert("Brak uprawnień do dodawania/edycji nieobecności.");
+      return;
+    }
+    setEditingAbsence(absence);
+    setShowAddAbsenceModal(true);
+  };
+
+  const handleDeleteAbsence = (absenceId) => {
+    if (!checkUserRole(['admin', 'hr'])) {
+      showAlert("Brak uprawnień do usuwania nieobecności.");
+      return;
+    }
+    showConfirm("Czy na pewno chcesz usunąć tę nieobecność? Ta operacja jest nieodwracalna.", async () => {
+      try {
+        const absenceRef = doc(db, `/artifacts/${appId}/users/${userId}/absences`, absenceId);
+        await deleteDoc(absenceRef);
+        showAlert("Absencja została pomyślnie usunięta.");
+      } catch (error) {
+        console.error("Błąd podczas usuwania nieobecności: ", error);
+        showAlert("Wystąpił błąd podczas usuwania nieobecności.");
+      }
+    });
+  };
+
+  const handleEditWorkHour = (workHour) => {
+    if (!checkUserRole(['admin', 'kierownik'])) {
+      showAlert("Brak uprawnień do edycji godzin pracy.");
+      return;
+    }
+    setEditingWorkHour(workHour);
+    setShowEditWorkHourModal(true);
+  };
+
+  const handleUpdateWorkHourSubmit = async (e) => {
+    e.preventDefault();
+    if (!checkUserRole(['admin', 'kierownik'])) {
+      showAlert("Brak uprawnień do aktualizacji godzin pracy.");
+      return;
+    }
+    const form = e.target;
+    const newStartTime = form.startTime.value;
+    const newEndTime = form.endTime.value;
+
+    if (!editingWorkHour) return;
+
+    try {
+      const workHourRef = doc(db, `/artifacts/${appId}/users/${userId}/workHours`, editingWorkHour.id);
+      await updateDoc(workHourRef, {
+        startTime: newStartTime,
+        endTime: newEndTime,
+      });
+      showAlert('Godziny pracy zostały pomyślnie zaktualizowane.');
+      closeModals();
+    } catch (error) {
+      console.error("Błąd podczas aktualizacji godzin pracy: ", error);
+      showAlert("Wystąpił błąd podczas aktualizacji godzin pracy.");
+    }
+  };
+
+  const handleDeleteWorkHour = (workHourId) => {
+    if (!checkUserRole(['admin'])) { // Only admin can delete work hours from this view
+      showAlert("Brak uprawnień do usuwania godzin pracy.");
+      return;
+    }
+    showConfirm("Czy na pewno chcesz usunąć ten wpis godzin pracy?", async () => {
+      try {
+        const workHourRef = doc(db, `/artifacts/${appId}/users/${userId}/workHours`, workHourId);
+        await deleteDoc(workHourRef);
+        showAlert("Wpis godzin pracy został pomyślnie usunięty.");
+      } catch (error) {
+        console.error("Błąd podczas usuwania godzin pracy: ", error);
+        showAlert("Wystąpił błąd podczas usuwania godzin pracy.");
+      }
+    });
+  };
+
+
+  const clearAbsenceFilters = () => {
+    setAbsenceEmployeeFilter('all');
+    setAbsenceTypeFilter('all');
+    setAbsenceDateStartFilter('');
+    setAbsenceDateEndFilter('');
+  };
+
+  const renderDashboard = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div onClick={() => setCurrentPage('pracownicy')} className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all transform hover:scale-105 cursor-pointer text-center flex flex-col items-center">
+        <Users className="text-blue-600 mb-2 w-12 h-12" />
+        <h3 className="text-2xl font-semibold text-blue-600">Pracownicy</h3>
+        <p className="text-gray-600 mt-2">Zarządzaj listą pracowników</p>
+      </div>
+      <div onClick={() => setCurrentPage('grupy')} className={`bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all transform hover:scale-105 cursor-pointer text-center relative flex flex-col items-center ${updateUnassignedAlert() > 0 ? 'border-2 border-red-500 animate-pulse' : ''}`}>
+        <Briefcase className="text-blue-600 mb-2 w-12 h-12" />
+        <h3 className="text-2xl font-semibold text-blue-600">Grupy Pracowników</h3>
+        <p className="text-gray-600 mt-2">{updateUnassignedAlert() > 0 ? `Do przypisania: ${updateUnassignedAlert()} pracownika/ów!` : 'Przypisz pracowników do grup'}</p>
+        {updateUnassignedAlert() > 0 && <span className="absolute top-4 right-4 text-red-500 text-3xl font-bold">!</span>}
+      </div>
+      <div onClick={() => setCurrentPage('nieobecnosci')} className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all transform hover:scale-105 cursor-pointer text-center flex flex-col items-center">
+        <MinusCircle className="text-blue-600 mb-2 w-12 h-12" />
+        <h3 className="text-2xl font-semibold text-blue-600">Rejestr Nieobecności</h3>
+        <p className="text-gray-600 mt-2">Dodawaj i filtruj nieobecności</p>
+      </div>
+      <div onClick={() => setCurrentPage('rejestr-czasu-pracy')} className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all transform hover:scale-105 cursor-pointer text-center flex flex-col items-center">
+        <Calendar className="text-blue-600 mb-2 w-12 h-12" />
+        <h3 className="text-2xl font-semibold text-blue-600">Rejestr czasu pracy</h3>
+        <p className="text-gray-600 mt-2">Rejestruj godziny pracy</p>
+      </div>
+      {checkUserRole(['admin', 'hr']) && (
+        <div onClick={() => setCurrentPage('raporty')} className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-all transform hover:scale-105 cursor-pointer text-center flex flex-col items-center">
+          <FileText className="text-blue-600 mb-2 w-12 h-12" />
+          <h3 className="text-2xl font-semibold text-blue-600">Raporty</h3>
+          <p className="text-gray-600 mt-2">Generuj raporty</p>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderEmployeesPage = () => {
+    const canEditEmployees = checkUserRole(['admin', 'hr']);
+
+    const filteredAndSortedEmployees = employees.filter(emp => {
+      if (employeeFilter === 'all') return true;
+      if (employeeFilter === 'irregularities') {
+        return employeesWithIrregularities.includes(emp.id);
+      }
+      if (employeeFilter === 'noGroup') {
+        return employeesWithoutGroup.includes(emp.id);
+      }
+      return employeeFilter === '' ? !emp.groupId : emp.groupId === employeeFilter;
+    });
+
+    return (
+      <>
+        {canEditEmployees && (
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <button onClick={() => openEmployeeModal()} className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors flex items-center gap-2">
+              <UserPlus className="w-5 h-5" /> Dodaj nowego pracownika
+            </button>
+            <div className="flex items-center gap-2">
+              <label htmlFor="group-filter" className="text-gray-600 font-medium whitespace-nowrap">Filtruj wg grupy:</label>
+              <select id="group-filter" value={employeeFilter} onChange={e => setEmployeeFilter(e.target.value)} className="p-2 border border-gray-300 rounded-lg">
+                <option value="all">Wszystkie</option>
+                <option value="noGroup">Bez Grupy ({employeesWithoutGroup.length})</option>
+                {groups.map(g => (
+                  <option key={g.id} value={g.id}>{g.name}</option>
+                ))}
+                {employeesWithIrregularities.length > 0 && (
+                  <option value="irregularities">Nieprawidłowości ({employeesWithIrregularities.length})</option>
+                )}
+              </select>
+            </div>
+          </div>
+        )}
+        <div className="overflow-x-auto bg-white rounded-xl shadow-md">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nazwisko</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Imię</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nazwa</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grupa pracownika</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Akcje</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredAndSortedEmployees.length > 0 ? (
+                filteredAndSortedEmployees.map(emp => (
+                  <tr key={emp.id} className="hover:bg-gray-100 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {(employeesWithIrregularities.includes(emp.id) || !emp.groupId) && (
+                        <AlertTriangle className={`inline-block w-4 h-4 mr-2 ${employeesWithIrregularities.includes(emp.id) ? 'text-red-500' : 'text-yellow-500'}`} title={employeesWithIrregularities.includes(emp.id) ? "Nieprawidłowość: praca i nieobecność w tym samym dniu!" : "Brak przypisanej grupy!"} />
+                      )}
+                      {emp.nazwisko}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">{emp.imie}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{emp.nazwa}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{emp.groupId ? (groups.find(g => g.id === emp.groupId)?.name || 'Nieznana') : UNASSIGNED_GROUP_NAME}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
+                      <button onClick={() => openEmployeeActivityModal(emp.id)} className="p-2 text-red-600 hover:text-red-900 transition-colors rounded-full hover:bg-gray-200" title="Rejestr aktywności">
+                        <Calendar className="w-5 h-5" />
+                      </button>
+                      <button onClick={() => openHistoryModal(emp.id)} className="p-2 text-blue-600 hover:text-blue-900 transition-colors rounded-full hover:bg-gray-200" title="Historia zmian grupy">
+                        <History className="w-5 h-5" />
+                      </button>
+                      {canEditEmployees && (
+                        <>
+                          <button onClick={() => openEmployeeModal(emp)} className="p-2 text-green-600 hover:text-green-900 transition-colors rounded-full hover:bg-gray-200" title="Edytuj pracownika">
+                            <Edit2 className="w-5 h-5" />
+                          </button>
+                          <button onClick={() => handleDeleteEmployee(emp.id)} className="p-2 text-red-600 hover:text-red-900 transition-colors rounded-full hover:bg-gray-200" title="Usuń pracownika">
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="px-6 py-4 text-center text-gray-500">Brak pracowników spełniających kryteria.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </>
+    );
+  };
+
+  const renderGroupsPage = () => {
+    const canAddDeleteGroups = checkUserRole(['admin', 'kierownik']);
+    const canAssignGroups = checkUserRole(['admin', 'hr', 'kierownik']);
+
+    return (
+      <>
+        {canAddDeleteGroups && (
+          <div className="bg-white p-6 rounded-xl shadow-md mb-6">
+            <h2 className="text-2xl font-bold mb-4 text-gray-800">Definiuj grupy</h2>
+            <form onSubmit={handleAddGroupFormSubmit} className="flex flex-col sm:flex-row gap-3">
+              <input type="text" name="newGroupName" placeholder="Wpisz nazwę nowej grupy" required className="flex-grow p-2 border border-gray-300 rounded-lg" />
+              <button type="submit" className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">Dodaj grupę</button>
+            </form>
+          </div>
+        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-gray-50 p-6 rounded-xl shadow-md border border-gray-200">
+            <h3 className="text-xl font-bold mb-4 text-gray-800">{UNASSIGNED_GROUP_NAME}</h3>
+            <ul className="divide-y divide-gray-200">
+              {employees.filter(emp => !emp.groupId).map(emp => (
+                <li key={emp.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-2 gap-2">
+                  <span className="font-medium text-gray-700">{emp.imie} {emp.nazwisko}</span>
+                  {canAssignGroups && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-500">Przenieś do:</span>
+                      <select onChange={(e) => handleSaveGroupChange(emp.id, e.target.value)} className="p-1 text-sm border border-gray-300 rounded-lg">
+                        <option value="">{UNASSIGNED_GROUP_NAME}</option>
+                        {groups.map(g => (
+                          <option key={g.id} value={g.id}>{g.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+          {groups.map(group => (
+            <div key={group.id} className="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-gray-800">{group.name}</h3>
+                {canAddDeleteGroups && (
+                  <button onClick={() => handleDeleteGroup(group.id)} className="p-2 text-red-600 hover:text-red-800 transition-colors rounded-full hover:bg-gray-200">
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                )}
+              </div>
+              <ul className="divide-y divide-gray-200">
+                {employees.filter(emp => emp.groupId === group.id).map(emp => (
+                  <li key={emp.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-2 gap-2">
+                    <span className="font-medium text-gray-700">{emp.imie} {emp.nazwisko}</span>
+                    {canAssignGroups && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-500">Przenieś do:</span>
+                        <select onChange={(e) => handleSaveGroupChange(emp.id, e.target.value)} value={emp.groupId} className="p-1 text-sm border border-gray-300 rounded-lg">
+                          <option value="">{UNASSIGNED_GROUP_NAME}</option>
+                          {groups.map(g => (
+                            <option key={g.id} value={g.id}>{g.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </>
+    );
+  };
+
+  const getDayDetails = (date) => {
+    const d = dayjs(date);
+    const dayOfWeek = d.day();
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+    const isToday = d.isSame(dayjs(), 'day');
+    return {
+      isWeekend,
+      isToday
+    };
+  };
+
+  const getAbsenceForDay = (date, employeeAbsences) => {
+    return employeeAbsences.find(absence => {
+      const start = dayjs(absence.startDate);
+      const end = dayjs(absence.endDate);
+      return dayjs(date).isBetween(start, end, null, '[]') || dayjs(date).isSame(start, 'day') || dayjs(date).isSame(end, 'day');
+    });
+  };
+
+  const getWorkForDay = (date, employeeWorkHours) => {
+    return employeeWorkHours.find(work => work.date === dayjs(date).format('YYYY-MM-DD') && work.isPresent);
+  };
+
+  const calculateHours = (startTime, endTime) => {
+    if (!startTime || !endTime) return 0;
+    const start = dayjs(`2000-01-01T${startTime}`);
+    const end = dayjs(`2000-01-01T${endTime}`);
+    if (end.isBefore(start)) {
+      return dayjs.duration(end.add(1, 'day').diff(start)).asHours();
+    }
+    const diff = dayjs.duration(end.diff(start));
+    return diff.asHours();
+  };
+
+  const formatHours = (hours) => {
+    const h = Math.floor(hours);
+    const m = Math.round((hours - h) * 60);
+    return `${h}h ${m}m`;
+  };
+
+
+  const renderEmployeeActivityCalendar = (employee) => {
+    const canEditAbsences = checkUserRole(['admin', 'hr']);
+    const canEditWorkHours = checkUserRole(['admin', 'kierownik']);
+    const canDeleteWorkHours = checkUserRole(['admin']); // Only admin can delete work hours from this view
+
+    const month = dayjs(currentEmployeeActivityCalendarDate).startOf('month');
+    const firstDay = month.day();
+    const daysInMonth = month.daysInMonth();
+    const days = [];
+
+    const employeeAbsences = absences.filter(abs => abs.employeeId === employee.id);
+    const employeeWorkHours = workHours.filter(wh => wh.employeeId === employee.id);
+
+    const startDayOffset = (firstDay + 6) % 7;
+    for (let i = 0; i < startDayOffset; i++) {
+        days.push(<div key={`empty-${i}`} className="p-2"></div>);
+    }
+
+    for (let i = 1; i <= daysInMonth; i++) {
+      const date = month.date(i);
+      const formattedDate = date.format('YYYY-MM-DD');
+      const dayDetails = getDayDetails(date);
+      const absence = getAbsenceForDay(date, employeeAbsences);
+      const work = getWorkForDay(date, employeeWorkHours);
+
+      let dayClass = 'bg-gray-100 text-gray-800';
+      let titleText = '';
+      let indicator = '';
+
+      if (work && absence) {
+        dayClass = 'bg-gradient-to-br from-green-300 to-red-300 text-gray-900';
+        titleText = 'Zarejestrowana praca i nieobecność';
+        indicator = <span className="text-xs font-bold text-red-700">!</span>;
+      } else if (work) {
+        dayClass = 'bg-green-300 text-gray-900';
+        const hours = formatHours(calculateHours(work.startTime, work.endTime));
+        titleText = `Zarejestrowana praca: ${work.startTime}-${work.endTime} (${hours})`;
+        indicator = <span className="text-xs font-medium text-green-700">{hours.split(' ')[0]}</span>;
+      } else if (absence) {
+        dayClass = 'bg-red-300 text-gray-900';
+        titleText = `Nieobecność: ${absence.type}, Okres: ${absence.startDate} do ${absence.endDate}`;
+        indicator = <span className="text-xs font-bold text-red-700">N</span>;
+      }
+
+      if (dayDetails.isWeekend) {
+        dayClass += ' text-gray-400';
+      }
+      if (dayDetails.isToday) {
+        dayClass += ' border-2 border-blue-500';
+      }
+      if (formattedDate === selectedDateForActivityDetails) {
+        dayClass += ' ring-2 ring-blue-500 ring-offset-2';
+      }
+
+      days.push(
+        <div
+          key={i}
+          className={`p-2 text-center rounded-lg relative cursor-pointer flex flex-col items-center justify-center ${dayClass}`}
+          title={titleText}
+          onClick={() => setSelectedDateForActivityDetails(formattedDate)}
+        >
+          <span className="text-lg font-semibold">{i}</span>
+          {indicator}
+        </div>
+      );
+    }
+
+    const weekdays = ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Niedz'];
+
+    const activitiesForSelectedDate = [];
+    if (selectedDateForActivityDetails) {
+      const selectedDay = dayjs(selectedDateForActivityDetails);
+      const absenceOnSelectedDay = getAbsenceForDay(selectedDay, employeeAbsences);
+      const workOnSelectedDay = getWorkForDay(selectedDay, employeeWorkHours);
+
+      if (absenceOnSelectedDay) {
+        activitiesForSelectedDate.push({
+          id: absenceOnSelectedDay.id,
+          type: 'Nieobecność',
+          displayDate: `Od ${absenceOnSelectedDay.startDate} do ${absenceOnSelectedDay.endDate}`,
+          rawType: absenceOnSelectedDay.type,
+          isAbsence: true,
+          originalAbsence: absenceOnSelectedDay
+        });
+      }
+      if (workOnSelectedDay) {
+        activitiesForSelectedDate.push({
+          id: workOnSelectedDay.id,
+          type: 'Praca',
+          displayDate: workOnSelectedDay.date,
+          hours: formatHours(calculateHours(workOnSelectedDay.startTime, workOnSelectedDay.endTime)),
+          period: `${workOnSelectedDay.startTime} - ${workOnSelectedDay.endTime}`, 
+          isWork: true,
+          originalWorkHour: workOnSelectedDay
+        });
+      }
+    }
+
+
+    return (
+      <div className="font-sans">
+        <div className="flex justify-between items-center mb-4">
+          <button onClick={() => setCurrentEmployeeActivityCalendarDate(dayjs(currentEmployeeActivityCalendarDate).subtract(1, 'month').toDate())} className="p-2 rounded-full hover:bg-gray-200">
+            <ChevronLeft className="w-5 h-5 text-gray-600" />
+          </button>
+          <h4 className="text-xl font-bold">{dayjs(currentEmployeeActivityCalendarDate).format('MMMM YYYY')}</h4>
+          <button onClick={() => setCurrentEmployeeActivityCalendarDate(dayjs(currentEmployeeActivityCalendarDate).add(1, 'month').toDate())} className="p-2 rounded-full hover:bg-gray-200">
+            <ChevronRight className="w-5 h-5 text-gray-600" />
+          </button>
+        </div>
+        <div className="grid grid-cols-7 text-center text-sm font-medium text-gray-500 mb-2">
+          {weekdays.map(day => <span key={day}>{day}</span>)}
+        </div>
+        <div className="grid grid-cols-7 gap-1">
+          {days}
+        </div>
+        <div className="mt-6">
+          <h5 className="text-lg font-semibold text-gray-800">Szczegóły aktywności dla {selectedDateForActivityDetails || 'wybierz datę'}:</h5>
+          {activitiesForSelectedDate.length > 0 ? (
+            <ul className="mt-2 space-y-2">
+              {activitiesForSelectedDate.map((activity, index) => (
+                <li key={index} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg shadow-sm">
+                  <span className="text-sm font-medium text-gray-700">
+                    <strong>{activity.type}:</strong> {activity.type === 'Praca' ? `${activity.displayDate}, ${activity.period} (${activity.hours})` : `${activity.rawType.charAt(0).toUpperCase() + activity.rawType.slice(1)}: ${activity.displayDate}`}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    {activity.isAbsence && canEditAbsences && (
+                      <>
+                        <button onClick={() => openAddAbsenceModal(activity.originalAbsence)} className="p-1 text-blue-600 hover:text-blue-800 transition-colors rounded-full hover:bg-gray-100" title="Edytuj nieobecność">
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => handleDeleteAbsence(activity.id)} className="p-1 text-red-500 hover:text-red-700 transition-colors rounded-full hover:bg-gray-100" title="Usuń nieobecność">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </>
+                    )}
+                    {activity.isWork && canEditWorkHours && (
+                      <>
+                        <button onClick={() => handleEditWorkHour(activity.originalWorkHour)} className="p-1 text-blue-600 hover:text-blue-800 transition-colors rounded-full hover:bg-gray-100" title="Edytuj godziny pracy">
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        {canDeleteWorkHours && (
+                          <button onClick={() => handleDeleteWorkHour(activity.id)} className="p-1 text-red-500 hover:text-red-700 transition-colors rounded-full hover:bg-gray-100" title="Usuń godziny pracy">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-2 text-gray-500">Brak zarejestrowanych aktywności dla wybranej daty.</p>
+          )}
+        </div>
+        {canEditAbsences && (
+          <div className="mt-6 flex flex-col items-start">
+            <button onClick={() => openAddAbsenceModal()} className="px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition-colors flex items-center gap-2">
+              <PlusCircle className="w-5 h-5" /> Dodaj nieobecność
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+
+  const renderAbsencePage = () => {
+    const canEditAbsences = checkUserRole(['admin', 'hr']);
+
+    const filteredAbsences = absences.filter(absence => {
+      const employeeMatch = absenceEmployeeFilter === 'all' || absence.employeeId === absenceEmployeeFilter;
+      const typeMatch = absenceTypeFilter === 'all' || absence.type === absenceTypeFilter;
+
+      let dateMatch = true;
+      if (absenceDateStartFilter || absenceDateEndFilter) {
+        const absenceStart = dayjs(absence.startDate);
+        const absenceEnd = dayjs(absence.endDate);
+        const filterStart = dayjs(absenceDateStartFilter);
+        const filterEnd = dayjs(absenceDateEndFilter);
+
+        if (absenceDateStartFilter && absenceDateEndFilter) {
+          dateMatch = absenceStart.isBetween(filterStart, filterEnd, null, '[]') ||
+                      absenceEnd.isBetween(filterStart, filterEnd, null, '[]') ||
+                      (absenceStart.isBefore(filterStart, 'day') && absenceEnd.isAfter(filterEnd, 'day'));
+        } else if (absenceDateStartFilter) {
+          dateMatch = absenceEnd.isAfter(filterStart, 'day') || absenceEnd.isSame(filterStart, 'day');
+        } else if (absenceDateEndFilter) {
+          dateMatch = absenceStart.isBefore(filterEnd, 'day') || absenceStart.isSame(filterEnd, 'day');
+        }
+      }
+
+      return employeeMatch && typeMatch && dateMatch;
+    });
+
+    return (
+      <>
+        {canEditAbsences && (
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <button onClick={() => openAddAbsenceModal()} className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors flex items-center gap-2">
+              <PlusCircle className="w-5 h-5" /> Dodaj nieobecność
+            </button>
+            <div className="flex flex-col md:flex-row items-end md:items-center gap-4">
+              <div className="flex flex-wrap gap-2">
+                <select value={absenceEmployeeFilter} onChange={e => setAbsenceEmployeeFilter(e.target.value)} className="p-2 border border-gray-300 rounded-lg">
+                  <option value="all">Wszyscy pracownicy</option>
+                  {employees.map(employee => (
+                    <option key={employee.id} value={employee.id}>{`${employee.imie} ${employee.nazwisko}`}</option>
+                  ))}
+                </select>
+                <select value={absenceTypeFilter} onChange={e => setAbsenceTypeFilter(e.target.value)} className="p-2 border border-gray-300 rounded-lg">
+                  <option value="all">Wszystkie typy</option>
+                  <option value="urlop">Urlop</option>
+                  <option value="L4">L4</option>
+                  <option value="inne">Inne</option>
+                </select>
+                <input type="date" value={absenceDateStartFilter} onChange={e => setAbsenceDateStartFilter(e.target.value)} className="p-2 border border-gray-300 rounded-lg" />
+                <input type="date" value={absenceDateEndFilter} onChange={e => setAbsenceDateEndFilter(e.target.value)} className="p-2 border border-gray-300 rounded-lg" />
+              </div>
+              <button onClick={clearAbsenceFilters} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-medium">
+                Wyczyść filtry
+              </button>
+            </div>
+          </div>
+        )}
+        <div className="overflow-x-auto bg-white rounded-xl shadow-md">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pracownik</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Typ absencji</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Okres</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Akcje</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredAbsences.length > 0 ? (
+                filteredAbsences.map(absence => {
+                  const employee = employees.find(emp => emp.id === absence.employeeId);
+                  const employeeName = employee ? `${employee.imie} ${employee.nazwisko}` : 'Nieznany';
+                  return (
+                    <tr key={absence.id} className="hover:bg-gray-100 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">{employeeName}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{absence.type.charAt(0).toUpperCase() + absence.type.slice(1)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{`Od ${absence.startDate} do ${absence.endDate}`}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
+                        {canEditAbsences && (
+                          <>
+                            <button onClick={() => openAddAbsenceModal(absence)} className="p-2 text-blue-600 hover:text-blue-800 transition-colors rounded-full hover:bg-gray-200" title="Edytuj nieobecność">
+                              <Edit2 className="w-5 h-5" />
+                            </button>
+                            <button onClick={() => handleDeleteAbsence(absence.id)} className="p-2 text-red-600 hover:text-red-900 transition-colors rounded-full hover:bg-gray-200" title="Usuń absencję">
+                              <Trash2 className="w-5 h-5" />
+                            </button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="4" className="px-6 py-4 text-center text-gray-500">Brak absencji spełniających kryteria.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </>
+    );
+  };
+
+  const generateTimeOptions = () => {
+    const times = [];
+    for (let h = 0; h < 24; h++) {
+      for (let m = 0; m < 60; m += 15) {
+        times.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
+      }
+    }
+    return times;
+  };
+
+  const timeOptions = generateTimeOptions();
+
+  const handleGroupCheckboxChange = (groupId) => {
+    setSelectedGroupsForRegistration(prevSelected =>
+      prevSelected.includes(groupId)
+        ? prevSelected.filter(id => id !== groupId)
+        : [...prevSelected, groupId]
+    );
+  };
+
+  useEffect(() => {
+    if (shiftTypeInput !== 'niestandardowa') {
+      setGlobalStartTime(SHIFT_HOURS[shiftTypeInput].start);
+      setGlobalEndTime(SHIFT_HOURS[shiftTypeInput].end);
+    }
+  }, [shiftTypeInput]);
+
+  useEffect(() => {
+    let filtered = employees;
+    if (selectedGroupsForRegistration.length > 0) {
+      filtered = employees.filter(emp => selectedGroupsForRegistration.includes(emp.groupId || ''));
+    }
+
+    const initialEmployeeStatus = filtered.map(emp => {
+      const isAbsent = absences.some(abs =>
+        abs.employeeId === emp.id &&
+        dayjs(selectedWorkDate).isBetween(dayjs(abs.startDate), dayjs(abs.endDate), null, '[]')
+      );
+      const existingWork = workHours.find(wh => wh.employeeId === emp.id && wh.date === selectedWorkDate);
+
+      return {
+        id: emp.id,
+        nazwa: emp.nazwa || `${emp.imie} ${emp.nazwisko.charAt(0)}`,
+        isPresent: existingWork ? existingWork.isPresent : !isAbsent,
+        startTime: existingWork ? existingWork.startTime : globalStartTime,
+        endTime: existingWork ? existingWork.endTime : globalEndTime,
+      };
+    });
+    setEmployeesForRegistration(initialEmployeeStatus);
+  }, [employees, selectedGroupsForRegistration, absences, selectedWorkDate, globalStartTime, globalEndTime, workHours]);
+
+  const handleEmployeeStatusChange = (employeeId, field, value) => {
+    setEmployeesForRegistration(prevStatus =>
+      prevStatus.map(emp =>
+        emp.id === employeeId ? { ...emp, [field]: value } : emp
+      )
+    );
+  };
+
+  const handleRegisterWorkHours = async () => {
+    if (!userId) {
+      showAlert("Błąd: Użytkownik nie jest uwierzytelniony.");
+      return;
+    }
+    if (!checkUserRole(['admin', 'kierownik'])) {
+      showAlert("Brak uprawnień do rejestracji godzin pracy.");
+      return;
+    }
+
+    const workHoursCollectionRef = collection(db, `/artifacts/${appId}/users/${userId}/workHours`);
+    const batch = writeBatch(db);
+
+    try {
+      for (const empStatus of employeesForRegistration) {
+        const docId = `${empStatus.id}_${selectedWorkDate}`;
+        const docRef = doc(workHoursCollectionRef, docId);
+
+        const workData = {
+          employeeId: empStatus.id,
+          date: selectedWorkDate,
+          startTime: empStatus.startTime,
+          endTime: empStatus.endTime,
+          isPresent: empStatus.isPresent,
+          shiftType: shiftTypeInput,
+        };
+
+        batch.set(docRef, workData, { merge: true });
+      }
+      await batch.commit();
+      showAlert("Godziny pracy zostały pomyślnie zarejestrowane!");
+    } catch (error) {
+      console.error("Błąd podczas rejestracji godzin pracy: ", error);
+      showAlert("Wystąpił błąd podczas rejestracji godzin pracy.");
+    }
+  };
+
+  useEffect(() => {
+    if (selectedWorkDate && employees.length > 0) {
+      const allActivitiesForSelectedDate = [];
+
+      workHours
+        .filter(wh => wh.date === selectedWorkDate && wh.isPresent)
+        .forEach(wh => {
+          const employee = employees.find(emp => emp.id === wh.employeeId);
+          const group = groups.find(g => g.id === employee?.groupId);
+          allActivitiesForSelectedDate.push({
+            type: 'Praca',
+            employeeName: employee ? `${employee.imie} ${employee.nazwisko}` : 'Nieznany',
+            groupName: group ? group.name : UNASSIGNED_GROUP_NAME,
+            startTime: wh.startTime,
+            endTime: wh.endTime,
+            hours: calculateHours(wh.startTime, wh.endTime),
+            id: wh.id
+          });
+        });
+
+      absences
+        .filter(abs => dayjs(selectedWorkDate).isBetween(dayjs(abs.startDate), dayjs(abs.endDate), null, '[]') || dayjs(selectedWorkDate).isSame(abs.startDate, 'day') || dayjs(selectedWorkDate).isSame(abs.endDate, 'day'))
+        .forEach(abs => {
+          const employee = employees.find(emp => emp.id === abs.employeeId);
+          const group = groups.find(g => g.id === employee?.groupId);
+          allActivitiesForSelectedDate.push({
+            type: 'Nieobecność',
+            employeeName: employee ? `${employee.imie} ${employee.nazwisko}` : 'Nieznany',
+            groupName: group ? group.name : UNASSIGNED_GROUP_NAME,
+            absenceType: abs.type,
+            startDate: abs.startDate,
+            endDate: abs.endDate,
+            id: abs.id
+          });
+        });
+
+      setSelectedDayWorkDetails(allActivitiesForSelectedDate);
+    } else {
+      setSelectedDayWorkDetails([]);
+    }
+  }, [selectedWorkDate, workHours, absences, employees, groups]);
+
+
+  const renderWorkTimeRegisterPage = () => {
+    const canEditWorkHours = checkUserRole(['admin', 'kierownik']);
+    const canDeleteWorkHours = checkUserRole(['admin']); // Only admin can delete work hours
+    const canDeleteAbsences = checkUserRole(['admin']); // Only admin can delete absences
+
+    const currentMonthDayjs = dayjs(workTimeCalendarDate);
+    const firstDayOfMonth = currentMonthDayjs.startOf('month').day();
+    const daysInMonth = currentMonthDayjs.daysInMonth();
+    const calendarDays = [];
+
+    const startDayOffset = (firstDayOfMonth + 6) % 7;
+    for (let i = 0; i < startDayOffset; i++) {
+      calendarDays.push(<div key={`empty-${i}`} className="p-2"></div>);
+    }
+
+    for (let i = 1; i <= daysInMonth; i++) {
+      const dayDate = currentMonthDayjs.date(i);
+      const formattedDayDate = dayDate.format('YYYY-MM-DD');
+      const dayDetails = getDayDetails(dayDate);
+
+      const hasWork = workHours.some(wh =>
+        wh.date === formattedDayDate &&
+        (selectedGroupsForRegistration.length === 0 || selectedGroupsForRegistration.includes(employees.find(e => e.id === wh.employeeId)?.groupId || '')) &&
+        wh.isPresent
+      );
+
+      const hasAbsence = absences.some(abs =>
+        dayjs(formattedDayDate).isBetween(dayjs(abs.startDate), dayjs(abs.endDate), null, '[]') &&
+        (selectedGroupsForRegistration.length === 0 || selectedGroupsForRegistration.includes(employees.find(e => e.id === abs.employeeId)?.groupId || ''))
+      );
+
+      let dayClass = 'bg-gray-100 text-gray-800';
+      let titleText = '';
+
+      if (hasWork && hasAbsence) {
+        dayClass = 'bg-gradient-to-br from-green-300 to-red-300 text-gray-900';
+        titleText = 'Zarejestrowana praca i nieobecność';
+      } else if (hasWork) {
+        dayClass = 'bg-green-300 text-gray-900';
+        titleText = 'Zarejestrowana praca';
+      } else if (hasAbsence) {
+        dayClass = 'bg-red-300 text-gray-900';
+        titleText = 'Zarejestrowana nieobecność';
+      }
+
+      if (dayDetails.isWeekend) {
+        dayClass += ' text-gray-400';
+      }
+      if (dayDetails.isToday) {
+        dayClass += ' border-2 border-blue-500';
+      }
+      if (formattedDayDate === selectedWorkDate) {
+        dayClass += ' ring-2 ring-blue-500 ring-offset-2';
+      }
+
+
+      calendarDays.push(
+        <div
+          key={i}
+          className={`p-2 text-center rounded-lg relative cursor-pointer ${dayClass}`}
+          title={titleText}
+          onClick={() => setSelectedWorkDate(formattedDayDate)}
+        >
+          {i}
+        </div>
+      );
+    }
+
+    const weekdays = ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Niedz'];
+
+    return (
+      <>
+        <div className="bg-white p-6 rounded-xl shadow-md mb-6">
+          <h2 className="text-2xl font-bold mb-4 text-gray-800">Kalendarz aktywności</h2>
+          <div className="font-sans">
+            <div className="flex justify-between items-center mb-4">
+              <button onClick={() => setWorkTimeCalendarDate(dayjs(workTimeCalendarDate).subtract(1, 'month').toDate())} className="p-2 rounded-full hover:bg-gray-200">
+                <ChevronLeft className="w-5 h-5 text-gray-600" />
+              </button>
+              <h4 className="text-xl font-bold">{dayjs(workTimeCalendarDate).format('MMMM YYYY')}</h4>
+              <button onClick={() => setWorkTimeCalendarDate(dayjs(workTimeCalendarDate).add(1, 'month').toDate())} className="p-2 rounded-full hover:bg-gray-200">
+                <ChevronRight className="w-5 h-5 text-gray-600" />
+              </button>
+            </div>
+            <div className="grid grid-cols-7 text-center text-sm font-medium text-gray-500 mb-2">
+              {weekdays.map(day => <span key={day}>{day}</span>)}
+            </div>
+            <div className="grid grid-cols-7 gap-1">
+              {calendarDays}
+            </div>
+          </div>
+          {selectedDayWorkDetails.length > 0 && (
+            <div className="mt-6">
+              <h3 className="text-xl font-bold mb-4 text-gray-800">Zarejestrowane aktywności dla {selectedWorkDate}</h3>
+              <div className="overflow-x-auto bg-white rounded-xl shadow-md">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Typ</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pracownik</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grupa</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Szczegóły</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Akcje</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {selectedDayWorkDetails.map((detail, index) => (
+                      <tr key={index} className="hover:bg-gray-100 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap">{detail.type}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">{detail.employeeName}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">{detail.groupName}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {detail.type === 'Praca'
+                            ? `Od ${detail.startTime} do ${detail.endTime} (${formatHours(detail.hours)})`
+                            : `Typ: ${detail.absenceType}, Od ${detail.startDate} do ${detail.endDate}`}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          {detail.type === 'Nieobecność' && canDeleteAbsences && ( // Only admin can delete absences from this view
+                            <button onClick={() => handleDeleteAbsence(detail.id)} className="p-2 text-red-600 hover:text-red-900 transition-colors rounded-full hover:bg-gray-200" title="Usuń absencję">
+                              <Trash2 className="w-5 h-5" />
+                            </button>
+                          )}
+                          {detail.type === 'Praca' && canDeleteWorkHours && ( // Only admin can delete work hours from this view
+                            <button onClick={() => handleDeleteWorkHour(detail.id)} className="p-2 text-red-600 hover:text-red-900 transition-colors rounded-full hover:bg-gray-200" title="Usuń godziny pracy">
+                              <Trash2 className="w-5 h-5" />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {canEditWorkHours && (
+          <div className="bg-white p-6 rounded-xl shadow-md mb-6">
+            <h2 className="text-2xl font-bold mb-4 text-gray-800">Rejestruj czas pracy</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <div className="flex flex-col">
+                <label htmlFor="workDate" className="font-medium text-gray-700 mb-1">Data</label>
+                <input
+                  type="date"
+                  id="workDate"
+                  value={selectedWorkDate}
+                  onChange={(e) => setSelectedWorkDate(e.target.value)}
+                  className="p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="shiftType" className="font-medium text-gray-700 mb-1">Rodzaj zmiany</label>
+                <select
+                  id="shiftType"
+                  value={shiftTypeInput}
+                  onChange={(e) => {
+                    setShiftTypeInput(e.target.value);
+                  }}
+                  className="p-2 border border-gray-300 rounded-lg"
+                >
+                  <option value="poranna">Zmiana poranna</option>
+                  <option value="popołudniowa">Zmiana popołudniowa</option>
+                  <option value="niestandardowa">Niestandardowa</option>
+                </select>
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="globalStart" className="font-medium text-gray-700 mb-1">Godzina start</label>
+                <select
+                  id="globalStart"
+                  value={globalStartTime}
+                  onChange={(e) => {
+                    setGlobalStartTime(e.target.value);
+                    setShiftTypeInput('niestandardowa');
+                  }}
+                  className="p-2 border border-gray-300 rounded-lg"
+                >
+                  {timeOptions.map(time => <option key={time} value={time}>{time}</option>)}
+                </select>
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="globalEnd" className="font-medium text-gray-700 mb-1">Godzina stop</label>
+                <select
+                  id="globalEnd"
+                  value={globalEndTime}
+                  onChange={(e) => {
+                    setGlobalEndTime(e.target.value);
+                    setShiftTypeInput('niestandardowa');
+                  }}
+                  className="p-2 border border-gray-300 rounded-lg"
+                >
+                  {timeOptions.map(time => <option key={time} value={time}>{time}</option>)}
+                </select>
+              </div>
+
+              <div className="flex flex-col col-span-full">
+                <label className="font-medium text-gray-700 mb-2">Wybierz grupy pracowników</label>
+                <div className="flex flex-wrap gap-2">
+                  {groups.map(group => (
+                    <label key={group.id} className="inline-flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full cursor-pointer hover:bg-blue-200 transition-colors">
+                      <input
+                        type="checkbox"
+                        value={group.id}
+                        checked={selectedGroupsForRegistration.includes(group.id)}
+                        onChange={() => handleGroupCheckboxChange(group.id)}
+                        className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
+                      />
+                      {group.name}
+                    </label>
+                  ))}
+                  <label className="inline-flex items-center bg-gray-100 text-gray-800 px-3 py-1 rounded-full cursor-pointer hover:bg-gray-200 transition-colors">
+                    <input
+                      type="checkbox"
+                      value=""
+                      checked={selectedGroupsForRegistration.includes('')}
+                      onChange={() => handleGroupCheckboxChange('')}
+                      className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
+                    />
+                    {UNASSIGNED_GROUP_NAME}
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <h3 className="text-xl font-bold mb-4 text-gray-800">Lista pracowników do rejestracji</h3>
+            <div className="overflow-x-auto bg-white rounded-xl shadow-md">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nazwa</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Obecny</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start pracy</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Koniec pracy</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {employeesForRegistration.length > 0 ? (
+                    employeesForRegistration.map(emp => (
+                      <tr key={emp.id} className="hover:bg-gray-100 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap">{emp.nazwa}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <input
+                            type="checkbox"
+                            checked={emp.isPresent}
+                            onChange={(e) => handleEmployeeStatusChange(emp.id, 'isPresent', e.target.checked)}
+                            className="form-checkbox h-5 w-5 text-blue-600 rounded"
+                          />
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <select
+                            value={emp.startTime}
+                            onChange={(e) => handleEmployeeStatusChange(emp.id, 'startTime', e.target.value)}
+                            className="p-2 border border-gray-300 rounded-lg"
+                            disabled={!emp.isPresent}
+                          >
+                            {timeOptions.map(time => <option key={time} value={time}>{time}</option>)}
+                          </select>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <select
+                            value={emp.endTime}
+                            onChange={(e) => handleEmployeeStatusChange(emp.id, 'endTime', e.target.value)}
+                            className="p-2 border border-gray-300 rounded-lg"
+                            disabled={!emp.isPresent}
+                          >
+                            {timeOptions.map(time => <option key={time} value={time}>{time}</option>)}
+                          </select>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4" className="px-6 py-4 text-center text-gray-500">Brak pracowników w wybranych grupach lub brak grup.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button onClick={handleRegisterWorkHours} className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors font-medium text-lg">
+                Rejestruj
+              </button>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  };
+
+  const handleReportGroupCheckboxChange = (groupId) => {
+    setReportSelectedGroups(prevSelected =>
+      prevSelected.includes(groupId)
+        ? prevSelected.filter(id => id !== groupId)
+        : [...prevSelected, groupId]
+    );
+  };
+
+  const generateReport = () => {
+    if (!checkUserRole(['admin', 'hr'])) {
+      showAlert("Brak uprawnień do generowania raportów.");
+      return;
+    }
+    setReportData(null);
+    setReportGenerated(false);
+
+    if (!reportStartDate || !reportEndDate) {
+      showAlert('Proszę wybrać zakres dat dla raportu.');
+      return;
+    }
+
+    const start = dayjs(reportStartDate);
+    const end = dayjs(reportEndDate);
+
+    if (end.diff(start, 'day') > 30) {
+      showAlert('Zakres dat nie może przekraczać 31 dni.');
+      return;
+    }
+    if (end.isBefore(start)) {
+      showAlert('Data zakończenia nie może być wcześniejsza niż data rozpoczęcia.');
+      return;
+    }
+
+    let employeesToReport = [];
+    if (reportFilterType === 'all') {
+      employeesToReport = employees;
+    } else if (reportFilterType === 'group') {
+      if (reportSelectedGroups.length === 0) {
+        showAlert('Proszę wybrać co najmniej jedną grupę.');
+        return;
+      }
+      employeesToReport = employees.filter(emp => reportSelectedGroups.includes(emp.groupId || ''));
+    } else if (reportFilterType === 'single') {
+      if (!reportSelectedEmployee) {
+        showAlert('Proszę wybrać pracownika.');
+        return;
+      }
+      const selectedEmp = employees.find(emp => emp.id === reportSelectedEmployee);
+      if (selectedEmp) {
+        employeesToReport = [selectedEmp];
+      } else {
+        showAlert('Wybrany pracownik nie istnieje.');
+        return;
+      }
+    }
+
+    if (employeesToReport.length === 0) {
+      showAlert('Brak pracowników do wygenerowania raportu dla wybranych kryteriów.');
+      return;
+    }
+
+    const reportRows = [];
+    const allDatesInRange = [];
+    for (let d = start; d.isSameOrBefore(end, 'day'); d = d.add(1, 'day')) {
+      allDatesInRange.push(d.format('YYYY-MM-DD'));
+    }
+
+    employeesToReport.forEach(employee => {
+      const employeeRow = {
+        id: employee.id,
+        nazwisko: employee.nazwisko,
+        imie: employee.imie,
+        nazwa: employee.nazwa,
+        dailyData: {},
+        totalWorkHoursWeekday: 0,
+        totalWorkHoursWeekend: 0,
+        totalCombinedHours: 0,
+        absenceSummary: {
+          urlop: 0,
+          L4: 0,
+          inne: 0,
+        },
+      };
+
+      allDatesInRange.forEach(date => {
+        const day = dayjs(date);
+        const dayOfWeek = day.day();
+        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+        const workEntry = workHours.find(wh => wh.employeeId === employee.id && wh.date === date && wh.isPresent);
+        const absenceEntry = absences.find(abs => day.isBetween(dayjs(abs.startDate), dayjs(abs.endDate), null, '[]') && abs.employeeId === employee.id);
+
+        if (workEntry) {
+          const hours = calculateHours(workEntry.startTime, workEntry.endTime);
+          employeeRow.dailyData[date] = hours;
+          if (!isWeekend) {
+            employeeRow.totalWorkHoursWeekday += hours;
+          } else {
+            employeeRow.totalWorkHoursWeekend += hours;
+          }
+        } else if (absenceEntry) {
+          employeeRow.dailyData[date] = absenceEntry.type.toUpperCase();
+          if (!isWeekend) {
+            employeeRow.absenceSummary[absenceEntry.type]++;
+          }
+        } else {
+          employeeRow.dailyData[date] = '';
+        }
+      });
+
+      employeeRow.totalCombinedHours = employeeRow.totalWorkHoursWeekday + (employeeRow.totalWorkHoursWeekend * 2);
+      reportRows.push(employeeRow);
+    });
+
+    setReportData(reportRows);
+    setReportGenerated(true);
+  };
+
+  const exportReportToCsv = () => {
+    if (!checkUserRole(['admin', 'hr'])) {
+      showAlert("Brak uprawnień do eksportowania raportów.");
+      return;
+    }
+    if (!reportData || reportData.length === 0) {
+      showAlert('Brak danych do wyeksportowania.');
+      return;
+    }
+
+    const start = dayjs(reportStartDate);
+    const end = dayjs(reportEndDate);
+    const allDatesInRange = [];
+    for (let d = start; d.isSameOrBefore(end, 'day'); d = d.add(1, 'day')) {
+      allDatesInRange.push(d.format('YYYY-MM-DD'));
+    }
+
+    let header = ['NAZWISKO I IMIE', 'NAZWA'];
+    allDatesInRange.forEach(date => {
+      const d = dayjs(date);
+      const isWeekend = d.day() === 0 || d.day() === 6;
+      let formattedDateHeader = d.format('DD.MM');
+      if (isWeekend) {
+        formattedDateHeader += ' (W)';
+      }
+      header.push(formattedDateHeader);
+    });
+    header.push('SUMA GODZIN ROBOCZYCH (H)', 'SUMA GODZIN WEEKENDOWYCH (H)', 'LACZNIE GODZIN (H)');
+    header.push('URLOP (DNI)', 'L4 (DNI)', 'INNE (DNI)');
+
+    let csvContent = header.join(';') + '\n';
+
+    reportData.forEach(row => {
+      const employeeName = `${row.nazwisko} ${row.imie}`;
+      const rowData = [
+        `"${employeeName}"`,
+        `"${row.nazwa}"`
+      ];
+
+      allDatesInRange.forEach(date => {
+        let cellValue = row.dailyData[date];
+        if (typeof cellValue === 'number') {
+          cellValue = cellValue.toFixed(2).replace('.', ',');
+        } else if (typeof cellValue === 'string') {
+          if (cellValue.toUpperCase() === 'URLOP') {
+            cellValue = 'UW';
+          }
+        }
+        rowData.push(cellValue);
+      });
+
+      rowData.push(
+        row.totalWorkHoursWeekday.toFixed(2).replace('.', ','),
+        row.totalWorkHoursWeekend.toFixed(2).replace('.', ','),
+        row.totalCombinedHours.toFixed(2).replace('.', ',')
+      );
+      rowData.push(
+        row.absenceSummary.urlop,
+        row.absenceSummary.L4,
+        row.absenceSummary.inne
+      );
+
+      csvContent += rowData.join(';') + '\n';
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+
+      let fileNameParts = [];
+      fileNameParts.push(`${start.format('YYYY-MM-DD')}_${end.format('YYYY-MM-DD')}`);
+      if (reportFilterType === 'all') {
+        fileNameParts.push('Wszyscy');
+      } else if (reportFilterType === 'group') {
+        const groupNames = reportSelectedGroups.map(id => groups.find(g => g.id === id)?.name || 'Nieznana').join('_');
+        fileNameParts.push(`Grupy_${groupNames}`);
+      } else if (reportFilterType === 'single') {
+        const employee = employees.find(emp => emp.id === reportSelectedEmployee);
+        fileNameParts.push(`Pracownik_${employee?.nazwisko}_${employee?.imie}`);
+      }
+      link.setAttribute('download', `Raport_${fileNameParts.join('_')}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      document.body.removeChild(link);
+      link.click();
+    } else {
+      showAlert('Twoja przeglądarka nie wspiera automatycznego pobierania plików CSV. Proszę skopiować dane ręcznie.');
+    }
+  };
+
+
+  const renderReportsPage = () => {
+    if (!checkUserRole(['admin', 'hr'])) {
+      return <div className="text-center text-red-500 font-bold text-xl py-10">Brak uprawnień do przeglądania raportów.</div>;
+    }
+
+    const isGenerateButtonDisabled = !reportStartDate || !reportEndDate ||
+      (reportFilterType === 'group' && reportSelectedGroups.length === 0) ||
+      (reportFilterType === 'single' && !reportSelectedEmployee);
+
+    return (
+      <>
+        <div className="bg-white p-6 rounded-xl shadow-md mb-6">
+          <h2 className="text-2xl font-bold mb-4 text-gray-800">Generuj Raport Aktywności</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Data rozpoczęcia</label>
+              <input type="date" value={reportStartDate} onChange={e => setReportStartDate(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Data zakończenia</label>
+              <input type="date" value={reportEndDate} onChange={e => setReportEndDate(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" />
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Filtruj według:</label>
+            <div className="flex flex-wrap gap-4">
+              <label className="inline-flex items-center">
+                <input type="radio" name="reportFilter" value="all" checked={reportFilterType === 'all'} onChange={() => setReportFilterType('all')} className="form-radio text-blue-600" />
+                <span className="ml-2 text-gray-700">Wszyscy pracownicy</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input type="radio" name="reportFilter" value="group" checked={reportFilterType === 'group'} onChange={() => setReportFilterType('group')} className="form-radio text-blue-600" />
+                <span className="ml-2 text-gray-700">Grupa/Grupy</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input type="radio" name="reportFilter" value="single" checked={reportFilterType === 'single'} onChange={() => setReportFilterType('single')} className="form-radio text-blue-600" />
+                <span className="ml-2 text-gray-700">Pojedynczy pracownik</span>
+              </label>
+            </div>
+          </div>
+
+          {reportFilterType === 'group' && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Wybierz grupy:</label>
+              <div className="flex flex-wrap gap-2">
+                {groups.map(group => (
+                  <label key={group.id} className="inline-flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full cursor-pointer hover:bg-blue-200 transition-colors">
+                    <input
+                      type="checkbox"
+                      value={group.id}
+                      checked={reportSelectedGroups.includes(group.id)}
+                      onChange={() => handleReportGroupCheckboxChange(group.id)}
+                      className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
+                    />
+                    {group.name}
+                  </label>
+                ))}
+                <label className="inline-flex items-center bg-gray-100 text-gray-800 px-3 py-1 rounded-full cursor-pointer hover:bg-gray-200 transition-colors">
+                  <input
+                    type="checkbox"
+                    value=""
+                    checked={reportSelectedGroups.includes('')}
+                    onChange={() => handleReportGroupCheckboxChange('')}
+                    className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
+                  />
+                  {UNASSIGNED_GROUP_NAME}
+                </label>
+              </div>
+            </div>
+          )}
+
+          {reportFilterType === 'single' && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">Wybierz pracownika:</label>
+              <select value={reportSelectedEmployee} onChange={e => setReportSelectedEmployee(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                <option value="">Wybierz pracownika</option>
+                {employees.map(emp => (
+                  <option key={emp.id} value={emp.id}>{`${emp.imie} ${emp.nazwisko}`}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className="flex justify-end gap-3">
+            <button onClick={generateReport} disabled={isGenerateButtonDisabled} className={`px-6 py-2 rounded-lg shadow-md transition-colors font-medium ${isGenerateButtonDisabled ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
+              Generuj Raport
+            </button>
+            <button onClick={exportReportToCsv} disabled={!reportGenerated} className={`px-6 py-2 rounded-lg shadow-md transition-colors font-medium ${!reportGenerated ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-green-600 text-white hover:bg-green-700'}`}>
+              Eksportuj do Excela
+            </button>
+          </div>
+        </div>
+
+        {reportData && reportData.length > 0 && (
+          <div className="bg-white p-6 rounded-xl shadow-md overflow-x-auto">
+            <h3 className="text-xl font-bold mb-4 text-gray-800">Podgląd Raportu</h3>
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50 z-10">Nazwisko i imię</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-16 bg-gray-50 z-10">Nazwa</th>
+                  {reportData[0] && dayjs(reportStartDate).isSameOrBefore(dayjs(reportEndDate), 'day') &&
+                    Array.from({ length: dayjs(reportEndDate).diff(dayjs(reportStartDate), 'day') + 1 }).map((_, i) => {
+                      const date = dayjs(reportStartDate).add(i, 'day');
+                      const isWeekend = date.day() === 0 || date.day() === 6;
+                      return (
+                        <th key={date.format('YYYY-MM-DD')} className={`px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider ${isWeekend ? 'text-red-600' : ''}`}>
+                          {date.format('DD.MM')}
+                        </th>
+                      );
+                    })}
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Suma godzin roboczych (h)</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Suma godzin weekendowych (h)</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Łącznie godzin (h)</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Urlop (dni)</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">L4 (dni)</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Inne (dni)</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {reportData.map(row => (
+                  <tr key={row.id} className="hover:bg-gray-100 transition-colors">
+                    <td className="px-3 py-2 whitespace-nowrap sticky left-0 bg-white">{`${row.nazwisko} ${row.imie}`}</td>
+                    <td className="px-3 py-2 whitespace-nowrap sticky left-16 bg-white">{row.nazwa}</td>
+                    {Array.from({ length: dayjs(reportEndDate).diff(dayjs(reportStartDate), 'day') + 1 }).map((_, i) => {
+                      const date = dayjs(reportStartDate).add(i, 'day').format('YYYY-MM-DD');
+                      let cellValue = row.dailyData[date];
+                      const isWeekend = dayjs(date).day() === 0 || dayjs(date).day() === 6;
+
+                      if (typeof cellValue === 'number') {
+                          cellValue = cellValue.toFixed(2).replace('.', ',');
+                      } else if (typeof cellValue === 'string' && cellValue.toUpperCase() === 'URLOP') {
+                          cellValue = 'UW';
+                      }
+
+                      return (
+                        <td key={date} className={`px-3 py-2 whitespace-nowrap text-center ${isWeekend ? 'text-red-600' : ''}`}>
+                          {cellValue}
+                        </td>
+                      );
+                    })}
+                    <td className="px-3 py-2 whitespace-nowrap">{row.totalWorkHoursWeekday.toFixed(2).replace('.', ',')}</td>
+                    <td className="px-3 py-2 whitespace-nowrap">{row.totalWorkHoursWeekend.toFixed(2).replace('.', ',')}</td>
+                    <td className="px-3 py-2 whitespace-nowrap">{row.totalCombinedHours.toFixed(2).replace('.', ',')}</td>
+                    <td className="px-3 py-2 whitespace-nowrap">{row.absenceSummary.urlop}</td>
+                    <td className="px-3 py-2 whitespace-nowrap">{row.absenceSummary.L4}</td>
+                    <td className="px-3 py-2 whitespace-nowrap">{row.absenceSummary.inne}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </>
+    );
+  };
+
+  const renderAuthPage = () => (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 font-sans">
+      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+          {authMode === 'login' ? 'Logowanie' : 'Rejestracja'}
+        </h2>
+        <form onSubmit={authMode === 'login' ? handleLogin : handleRegister} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Hasło</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loadingAuth}
+            className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-blue-300"
+          >
+            {loadingAuth ? 'Ładowanie...' : (authMode === 'login' ? 'Zaloguj' : 'Zarejestruj')}
+          </button>
+        </form>
+        <div className="mt-6 text-center">
+          {authMode === 'login' ? (
+            <p className="text-gray-600">
+              Nie masz konta?{' '}
+              <button onClick={() => setAuthMode('register')} className="text-blue-600 hover:underline font-medium">
+                Zarejestruj się
+              </button>
+            </p>
+          ) : (
+            <p className="text-gray-600">
+              Masz już konto?{' '}
+              <button onClick={() => setAuthMode('login')} className="text-blue-600 hover:underline font-medium">
+                Zaloguj się
+              </button>
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+
+  if (!isAuthReady) {
+    return <div className="flex items-center justify-center min-h-screen text-gray-600 font-sans">Ładowanie...</div>;
+  }
+
+  if (authMode !== 'app') {
+    return renderAuthPage();
+  }
+
+  return (
+    <div className="bg-gray-100 min-h-screen font-sans">
+      <nav className="fixed top-0 left-0 w-full bg-white shadow-md z-10 p-4">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-gray-900">Zarządzanie Zespołem</h1>
+          <div className="flex items-center space-x-2">
+            <button onClick={() => setCurrentPage('home')} className={`p-2 rounded-full transition-colors ${currentPage === 'home' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-200'}`} title="Strona Główna">
+              <Home className="w-6 h-6" />
+            </button>
+            <button onClick={() => setCurrentPage('pracownicy')} className={`p-2 rounded-full transition-colors relative ${currentPage === 'pracownicy' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-200'}`} title="Pracownicy">
+              {employeesWithIrregularities.length > 0 && (
+                <span className={`absolute top-0 left-0 -mt-1 -ml-1 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center bg-red-500`}>!</span>
+              )}
+              <Users className="w-6 h-6" />
+            </button>
+            <button onClick={() => setCurrentPage('grupy')} className={`p-2 rounded-full transition-colors relative ${currentPage === 'grupy' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-200'}`} title="Grupy">
+              {employeesWithoutGroup.length > 0 && (
+                <span className={`absolute top-0 left-0 -mt-1 -ml-1 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center bg-yellow-500`}>!</span>
+              )}
+              <Briefcase className="w-6 h-6" />
+            </button>
+            <button onClick={() => setCurrentPage('nieobecnosci')} className={`p-2 rounded-full transition-colors ${currentPage === 'nieobecnosci' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-200'}`} title="Nieobecności">
+              <MinusCircle className="w-6 h-6" />
+            </button>
+            <button onClick={() => setCurrentPage('rejestr-czasu-pracy')} className={`p-2 rounded-full transition-colors ${currentPage === 'rejestr-czasu-pracy' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-200'}`} title="Rejestr czasu pracy">
+              <Calendar className="w-6 h-6" />
+            </button>
+            {checkUserRole(['admin', 'hr']) && (
+              <button onClick={() => setCurrentPage('raporty')} className={`p-2 rounded-full transition-colors ${currentPage === 'raporty' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-200'}`} title="Raporty">
+                <FileText className="w-6 h-6" />
+              </button>
+            )}
+            {userRole && (
+              <span className="ml-4 text-gray-700 font-semibold text-lg mr-2">Rola: {userRole.toUpperCase()}</span>
+            )}
+            <button onClick={handleLogout} className="p-2 rounded-full transition-colors text-gray-600 hover:bg-gray-200" title="Wyloguj">
+              <LogOut className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
+      </nav>
+      <main className="max-w-7xl mx-auto py-24 px-4 sm:px-6 lg:px-8">
+        <h2 className="text-3xl font-extrabold text-gray-900 mb-8">{currentPage === 'home' ? 'Pulpit Nawigacyjny' : currentPage.charAt(0).toUpperCase() + currentPage.slice(1).replace(/-/g, ' ')}</h2>
+        {currentPage === 'home' && renderDashboard()}
+        {currentPage === 'pracownicy' && renderEmployeesPage()}
+        {currentPage === 'grupy' && renderGroupsPage()}
+        {currentPage === 'nieobecnosci' && renderAbsencePage()}
+        {currentPage === 'rejestr-czasu-pracy' && renderWorkTimeRegisterPage()}
+        {currentPage === 'raporty' && renderReportsPage()}
+      </main>
+
+      {/* Employee Modal (Dodaj/Edytuj) */}
+      <ModalComponent show={showEmployeeModal} onClose={closeModals} title={editingEmployee ? "Edytuj pracownika" : "Dodaj nowego pracownika"}>
+        <form onSubmit={handleEmployeeFormSubmit} className="space-y-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="w-full">
+              <label className="block text-sm font-medium text-gray-700">Nazwisko</label>
+              <input
+                type="text"
+                name="nazwisko"
+                value={employeeFormState.nazwisko}
+                onChange={handleEmployeeFormChange}
+                required
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              />
+            </div>
+            <div className="w-full">
+              <label className="block text-sm font-medium text-gray-700">Imię</label>
+              <input
+                type="text"
+                name="imie"
+                value={employeeFormState.imie}
+                onChange={handleEmployeeFormChange}
+                required
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              />
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="w-full">
+              <label className="block text-sm font-medium text-gray-700">Nazwa (opcjonalnie)</label>
+              <input
+                type="text"
+                name="nazwa"
+                value={employeeFormState.nazwa}
+                onChange={handleEmployeeFormChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              />
+            </div>
+            <div className="w-full">
+              <label className="block text-sm font-medium text-gray-700">Grupa</label>
+              <select
+                name="groupId"
+                value={employeeFormState.groupId}
+                onChange={handleEmployeeFormChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              >
+                <option value="">{UNASSIGNED_GROUP_NAME}</option>
+                {groups.map(group => (
+                  <option key={group.id} value={group.id}>{group.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="w-full">
+              <label className="block text-sm font-medium text-gray-700">Początek zatrudnienia</label>
+              <input
+                type="date"
+                name="start"
+                value={employeeFormState.start}
+                onChange={handleEmployeeFormChange}
+                required
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              />
+            </div>
+            <div className="w-full">
+              <label className="block text-sm font-medium text-gray-700">Koniec zatrudnienia (opcjonalnie)</label>
+              <input
+                type="date"
+                name="end"
+                value={employeeFormState.end}
+                onChange={handleEmployeeFormChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-3 pt-4">
+            <button type="button" onClick={closeModals} className="px-5 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-medium">Anulaj</button>
+            <button type="submit" className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">Zapisz</button>
+          </div>
+        </form>
+      </ModalComponent>
+
+      {/* Employee Activity Modal (now shows both absences and work hours) */}
+      <ModalComponent show={showEmployeeActivityModal} onClose={closeModals} title={`Rejestr aktywności: ${selectedEmployeeForActivity?.imie || ''} ${selectedEmployeeForActivity?.nazwisko || ''}`}>
+        {selectedEmployeeForActivity && renderEmployeeActivityCalendar(selectedEmployeeForActivity)}
+      </ModalComponent>
+
+      {/* Add/Edit Absence Modal */}
+      <ModalComponent show={showAddAbsenceModal} onClose={closeModals} title={editingAbsence ? "Edytuj nieobecność" : "Dodaj nową nieobecność"} cancelButtonText="Zamknij">
+        <form onSubmit={handleAbsenceFormSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Pracownik</label>
+            <select name="absenceEmployee" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+                    defaultValue={editingAbsence ? editingAbsence.employeeId : ''} disabled={!!editingAbsence}>
+              <option value="">Wybierz pracownika</option>
+              {employees.map(e => (
+                <option key={e.id} value={e.id}>{`${e.imie} ${e.nazwisko}`}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Typ absencji</label>
+            <select name="absenceType" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+                    defaultValue={editingAbsence ? editingAbsence.type : 'urlop'}>
+              <option value="urlop">Urlop</option>
+              <option value="L4">L4</option>
+              <option value="inne">Inne</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Data rozpoczęcia</label>
+            <input type="date" name="absenceStart" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+                   defaultValue={editingAbsence ? editingAbsence.startDate : ''} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Data zakończenia</label>
+            <input type="date" name="absenceEnd" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+                   defaultValue={editingAbsence ? editingAbsence.endDate : ''} />
+          </div>
+          <div className="flex justify-end gap-3 pt-4">
+            <button type="button" onClick={closeModals} className="px-5 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-medium">Zamknij</button>
+            <button type="submit" className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">{editingAbsence ? "Zapisz zmiany" : "Dodaj"}</button>
+          </div>
+        </form>
+      </ModalComponent>
+
+      {/* Edit Work Hour Modal */}
+      <ModalComponent show={showEditWorkHourModal} onClose={closeModals} title="Edytuj godziny pracy" cancelButtonText="Anulaj">
+        <form onSubmit={handleUpdateWorkHourSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Data</label>
+            <input type="date" name="workDate" value={editingWorkHour?.date || ''} disabled className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border bg-gray-100" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Godzina rozpoczęcia</label>
+            <select name="startTime" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+                    defaultValue={editingWorkHour?.startTime || '06:00'}>
+              {timeOptions.map(time => <option key={time} value={time}>{time}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Godzina zakończenia</label>
+            <select name="endTime" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+                    defaultValue={editingWorkHour?.endTime || '14:00'}>
+              {timeOptions.map(time => <option key={time} value={time}>{time}</option>)}
+            </select>
+          </div>
+          <div className="flex justify-end gap-3 pt-4">
+            <button type="button" onClick={closeModals} className="px-5 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-medium">Anulaj</button>
+            <button type="submit" className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">Zapisz zmiany</button>
+          </div>
+        </form>
+      </ModalComponent>
+
+      {/* History Modal */}
+      <ModalComponent show={showHistoryModal} onClose={closeModals} title={`Historia zmian dla: ${selectedEmployeeHistory?.imie} ${selectedEmployeeHistory?.nazwisko}`}>
+        <ul className="list-disc list-inside space-y-2">
+          {selectedEmployeeHistory?.history?.length > 0 ? (
+            selectedEmployeeHistory.history.map((change, index) => (
+              <li key={index} className="text-gray-700">
+                <span className="font-semibold">{change.date}:</span> Przypisano do grupy: <strong>{change.newGroup}</strong>
+              </li>
+            ))
+          ) : (
+            <li className="text-gray-700">Brak historii zmian.</li>
+          )}
+        </ul>
+      </ModalComponent>
+
+      {/* Confirmation Modal */}
+      <ModalComponent
+        show={showConfirmModal}
+        onClose={closeModals}
+        onConfirm={() => { confirmModalData.onConfirm(); closeModals(); }}
+        title="Potwierdzenie"
+      >
+        <p>{confirmModalData.message}</p>
+      </ModalComponent>
+
+      {/* Alert Modal */}
+      <ModalComponent
+        show={showAlertModal}
+        onClose={closeModals}
+        title="Uwaga"
+        cancelButtonText="Zamknij"
+      >
+        <p>{alertMessage}</p>
+      </ModalComponent>
+    </div>
+  );
+};
+
+export default App;
