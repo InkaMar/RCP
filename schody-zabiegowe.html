@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Schody zabiegowe 330×110 — projekt konstrukcji</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1a1f1c;
+      --muted: #5a635c;
+      --line: #c5cdc6;
+      --paper: #f3f0e8;
+      --panel: #fffdf8;
+      --steel: #3d4a52;
+      --wood: #c47a3a;
+      --wood-deep: #8f4f1f;
+      --accent: #1f6b4a;
+      --warn: #8a3b12;
+      --grid: #d9d3c6;
+      --shadow: 0 18px 40px rgba(26, 31, 28, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "IBM Plex Sans", sans-serif;
+      background:
+        radial-gradient(ellipse 80% 50% at 10% 0%, rgba(31, 107, 74, 0.08), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 90% 10%, rgba(196, 122, 58, 0.1), transparent 50%),
+        linear-gradient(180deg, #ebe6da 0%, var(--paper) 35%, #e7e2d6 100%);
+      line-height: 1.55;
+    }
+
+    .wrap {
+      width: min(1100px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 2.5rem 0 4rem;
+    }
+
+    header.hero {
+      position: relative;
+      padding: 2.2rem 0 2rem;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    header.hero::before {
+      content: "";
+      position: absolute;
+      inset: -20% -10% auto auto;
+      width: 280px;
+      height: 280px;
+      background: repeating-linear-gradient(
+        -18deg,
+        transparent,
+        transparent 10px,
+        rgba(61, 74, 82, 0.05) 10px,
+        rgba(61, 74, 82, 0.05) 11px
+      );
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin: 0 0 0.75rem;
+    }
+
+    h1 {
+      font-family: "Instrument Serif", Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      line-height: 1.05;
+      margin: 0 0 0.85rem;
+      max-width: 14ch;
+    }
+
+    .lead {
+      max-width: 62ch;
+      font-size: 1.08rem;
+      color: var(--muted);
+      margin: 0 0 1.4rem;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-top: 1.2rem;
+    }
+
+    a.btn, button.btn {
+      appearance: none;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: #f7f3ea;
+      padding: 0.7rem 1.1rem;
+      font: 600 0.92rem/1 "IBM Plex Sans", sans-serif;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    a.btn.secondary, button.btn.secondary {
+      background: transparent;
+      color: var(--ink);
+    }
+
+    a.btn:hover, button.btn:hover { transform: translateY(-1px); }
+
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+      margin: 1.6rem 0 0;
+    }
+
+    .kpi {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 0.9rem 1rem;
+      box-shadow: var(--shadow);
+    }
+
+    .kpi b {
+      display: block;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 1.35rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .kpi span {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    section {
+      margin: 2.4rem 0;
+      animation: rise 0.6s ease both;
+    }
+
+    section:nth-of-type(2) { animation-delay: 0.05s; }
+    section:nth-of-type(3) { animation-delay: 0.1s; }
+    section:nth-of-type(4) { animation-delay: 0.15s; }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      font-family: "Instrument Serif", Georgia, serif;
+      font-weight: 400;
+      font-size: 2rem;
+      margin: 0 0 0.5rem;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      margin: 1.4rem 0 0.55rem;
+    }
+
+    .section-lead {
+      color: var(--muted);
+      max-width: 70ch;
+      margin: 0 0 1.2rem;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 1.2rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
+    }
+
+    .callout {
+      border-left: 3px solid var(--accent);
+      padding: 0.85rem 1rem;
+      background: rgba(31, 107, 74, 0.06);
+      margin: 1rem 0;
+    }
+
+    .callout.warn {
+      border-left-color: var(--warn);
+      background: rgba(138, 59, 18, 0.07);
+    }
+
+    .callout strong { color: var(--ink); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 0.55rem 0.45rem;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    tr.winder td { background: rgba(196, 122, 58, 0.1); }
+    tr.top td { background: rgba(31, 107, 74, 0.08); font-weight: 600; }
+
+    svg.drawing {
+      width: 100%;
+      height: auto;
+      display: block;
+      background:
+        linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 20px 20px,
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 20px 20px,
+        #faf7f0;
+      border: 1px solid var(--line);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem 1.2rem;
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .legend i {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      margin-right: 0.35rem;
+      vertical-align: -2px;
+      border: 1px solid rgba(0,0,0,0.15);
+    }
+
+    .legend .wood { background: var(--wood); }
+    .legend .steel { background: var(--steel); }
+    .legend .winder { background: #e8b07a; }
+    .legend .walk { background: transparent; border: 2px dashed var(--accent); width: 18px; height: 0; vertical-align: 4px; }
+
+    ol.steps, ul.clean {
+      margin: 0.4rem 0 0;
+      padding-left: 1.2rem;
+    }
+
+    ol.steps li, ul.clean li { margin: 0.35rem 0; }
+
+    .mono {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.9em;
+    }
+
+    footer {
+      margin-top: 3rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .toc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem 0 0;
+    }
+
+    .toc a {
+      color: var(--ink);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: 0.4rem 0.7rem;
+      font-size: 0.85rem;
+    }
+
+    .toc a:hover { border-color: var(--ink); }
+
+    @media (max-width: 860px) {
+      .kpi-strip, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      h1 { max-width: none; }
+    }
+
+    @media print {
+      body { background: white; }
+      .cta-row, .toc { display: none; }
+      .panel, .kpi { box-shadow: none; }
+      section { break-inside: avoid; }
+      a.btn { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <p class="eyebrow">Projekt roboczy · bez podestu · otwór 330×110</p>
+      <h1>Schody zabiegowe</h1>
+      <p class="lead">
+        Wariant zamiast schodów z podestem: pełne stopnie z podstopnicami na konstrukcji stalowej
+        (kątowniki / ceowniki) zamocowanej do ścian, wypełniającej całą szerokość klatki 110&nbsp;cm.
+        Podest usunięty — w narożniku trzy stopnie zabiegowe.
+      </p>
+      <div class="cta-row">
+        <a class="btn" href="#schemat-rzut">Rzut zabiegów</a>
+        <a class="btn secondary" href="#konstrukcja">Schemat spawania</a>
+        <a class="btn secondary" href="#zestawienie">Zestawienie materiałów</a>
+        <button class="btn secondary" type="button" onclick="window.print()">Drukuj / PDF</button>
+      </div>
+      <div class="kpi-strip">
+        <div class="kpi"><b>280 cm</b><span>wysokość kondygnacji</span></div>
+        <div class="kpi"><b>330×110</b><span>otwór w stropie [cm]</span></div>
+        <div class="kpi"><b>16 × 17,5</b><span>podniesień × wysokość [cm]</span></div>
+        <div class="kpi"><b>28 cm</b><span>głębokość biegu prostego</span></div>
+      </div>
+      <nav class="toc" aria-label="Spis treści">
+        <a href="#geometria">1. Geometria</a>
+        <a href="#schemat-rzut">2. Rzut</a>
+        <a href="#schemat-przekroj">3. Przekrój</a>
+        <a href="#zabiegi">4. Zabiegi</a>
+        <a href="#konstrukcja">5. Stal</a>
+        <a href="#montaz">6. Montaż</a>
+        <a href="#zestawienie">7. Materiały</a>
+        <a href="#argumenty">8. vs podest</a>
+      </nav>
+    </header>
+
+    <section id="geometria">
+      <h2>1. Geometria — dlaczego 17,5 cm, nie dokładnie 18</h2>
+      <p class="section-lead">
+        Żądasz wysokości stopnia <span class="mono">18 cm</span> (deska + podstopnica w świetle podniesienia).
+        Przy H = 280 cm liczba podniesień musi być całkowita i równa:
+      </p>
+      <div class="grid-3">
+        <div class="panel">
+          <h3>Wariant A — zalecany</h3>
+          <p><strong>16 × 17,5 cm = 280 cm</strong></p>
+          <p>Najbliżej 18 cm przy pełnym pokryciu wysokości. Wygodniejszy kąt (Blondel ≈ 63 cm przy głębokości 28 cm).</p>
+        </div>
+        <div class="panel">
+          <h3>Wariant B — jak na kalk.pro</h3>
+          <p><strong>15 × 18,67 cm = 280 cm</strong></p>
+          <p>Dokładnie to, co wychodzi z rysunku z podestem. Stromejsze, mniejsza głębokość ~25,7 cm.</p>
+        </div>
+        <div class="panel">
+          <h3>Dokładnie 18,0 cm?</h3>
+          <p><strong>15 × 18 = 270</strong> albo <strong>16 × 18 = 288</strong> — nie domyka 280 cm. Bez zmiany poziomu posadzki / stropu nie da się utrzymać równych stopni.</p>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>Decyzja projektowa w tym opracowaniu:</strong> Wariant A — <span class="mono">h = 17,5 cm</span>,
+        <span class="mono">n = 16</span>, głębokość biegu prostego <span class="mono">s = 28 cm</span>
+        (2h + s = 63 cm). Deska stopnia gr. 40 mm, podstopnica z deski zamyka czoło.
+      </div>
+    </section>
+
+    <section id="uklad">
+      <h2>Układ biegu (bez podestu)</h2>
+      <p class="section-lead">
+        Ten sam kształt L co na wizualizacji z podestem, ale płaski podest ~96×96 cm zastąpiony trzema zabiegami.
+        W narożniku zyskujesz <strong>3 podniesienia wysokości</strong> zamiast „pustego” spocznika.
+      </p>
+      <div class="panel">
+        <table>
+          <thead>
+            <tr>
+              <th>Odcinek</th>
+              <th>Stopnie</th>
+              <th class="num">Liczba</th>
+              <th class="num">Wys. narastająco</th>
+              <th>Uwagi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Bieg dolny (prosty)</td>
+              <td>1–3</td>
+              <td class="num">3</td>
+              <td class="num">52,5 cm</td>
+              <td>s = 28 cm, szer. 110 cm</td>
+            </tr>
+            <tr class="winder">
+              <td>Zabieg 90°</td>
+              <td>4–6</td>
+              <td class="num">3</td>
+              <td class="num">105,0 cm</td>
+              <td>po 30°; linia biegu R = 55 cm</td>
+            </tr>
+            <tr>
+              <td>Bieg górny (prosty)</td>
+              <td>7–15</td>
+              <td class="num">9</td>
+              <td class="num">262,5 cm</td>
+              <td>w osi otworu 330 cm</td>
+            </tr>
+            <tr class="top">
+              <td>Stopień dojścia / posadzka</td>
+              <td>16</td>
+              <td class="num">1</td>
+              <td class="num">280,0 cm</td>
+              <td>w poziomie stropu / posadzki piętra</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout warn">
+        <strong>Otwór w stropie 330×110 cm</strong> — schody wypełniają całą szerokość 110 cm (od ściany do ściany).
+        Długość otworu 330 cm obsługuje bieg górny i przejście nad zabiegiem; bez podestu nie „zjada” ~96 cm płaskiej półki w planie użytkowym dolnej kondygnacji w tym samym miejscu, gdzie można już nabierać wysokości.
+      </div>
+    </section>
+
+    <section id="schemat-rzut">
+      <h2>2. Schemat — rzut z góry</h2>
+      <p class="section-lead">Siatka tła = 20 cm. Wymiary w cm. Linia przerywana zielona = linia biegu (chodu).</p>
+      <div class="panel">
+        <svg class="drawing" viewBox="0 0 740 520" role="img" aria-label="Rzut schodów zabiegowych">
+          <!-- Well outline L-shape approximation: long arm 330 x 110, short arm -->
+          <rect x="80" y="80" width="560" height="200" fill="none" stroke="#1a1f1c" stroke-width="2.2"/>
+          <rect x="80" y="280" width="200" height="160" fill="none" stroke="#1a1f1c" stroke-width="2.2"/>
+
+          <!-- Opening label -->
+          <text x="360" y="60" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5a635c">OTWÓR W STROPIE 330 × 110</text>
+          <line x1="80" y1="48" x2="640" y2="48" stroke="#5a635c" stroke-width="1"/>
+          <text x="360" y="42" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#5a635c">330</text>
+          <line x1="658" y1="80" x2="658" y2="280" stroke="#5a635c" stroke-width="1"/>
+          <text x="672" y="185" font-family="IBM Plex Mono, monospace" font-size="12" fill="#5a635c">110</text>
+
+          <!-- Scale: 330cm = 560px => 1cm = 1.697px; use 1.6 px/cm for readability -->
+          <!-- Lower flight: 3 treads along +Y from bottom, width 110 along X of short arm -->
+          <!-- Short arm: x=80..280 (200px=110cm => 1.818 px/cm), y=280..440 -->
+          <!-- Long arm: x=80..640, y=80..280 (200px=110cm) -->
+
+          <!-- Coordinate helper: px = 80 + cm*scale -->
+          <!-- Short arm width 110cm = 200px, scale_s = 200/110 -->
+          <!-- Long arm length 330cm = 560px, scale_l = 560/330 -->
+
+          <!-- Bieg dolny: stopnie 1–3 (do styku z zabiegiem na y=280) -->
+          <g id="lower">
+            <rect x="80" y="386.7" width="200" height="53.3" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1.2"/>
+            <text x="180" y="418" text-anchor="middle" fill="#fff" font-size="14" font-family="IBM Plex Sans, sans-serif" font-weight="600">1</text>
+            <rect x="80" y="333.3" width="200" height="53.4" fill="#cc843f" stroke="#8f4f1f" stroke-width="1.2"/>
+            <text x="180" y="365" text-anchor="middle" fill="#fff" font-size="14" font-family="IBM Plex Sans, sans-serif" font-weight="600">2</text>
+            <rect x="80" y="280" width="200" height="53.3" fill="#d48d48" stroke="#8f4f1f" stroke-width="1.2"/>
+            <text x="180" y="312" text-anchor="middle" fill="#fff" font-size="14" font-family="IBM Plex Sans, sans-serif" font-weight="600">3</text>
+          </g>
+
+          <!-- Zabiegi 4–6 od bieguna (280,280), sektory 30° (0° = w lewo, 90° = w górę) -->
+          <g id="winders">
+            <!-- 4: 0–30° -->
+            <path d="M280,280 L80,280 L80,164.5 Z" fill="#e8b07a" stroke="#8f4f1f" stroke-width="1.3"/>
+            <!-- 5: 30–60° (z narożnikiem zewnętrznym) -->
+            <path d="M280,280 L80,164.5 L80,80 L164.5,80 Z" fill="#e0a36a" stroke="#8f4f1f" stroke-width="1.3"/>
+            <!-- 6: 60–90° -->
+            <path d="M280,280 L164.5,80 L280,80 Z" fill="#d99858" stroke="#8f4f1f" stroke-width="1.3"/>
+            <text x="150" y="250" fill="#1a1f1c" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">4</text>
+            <text x="130" y="145" fill="#1a1f1c" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">5</text>
+            <text x="230" y="120" fill="#1a1f1c" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">6</text>
+          </g>
+
+          <!-- Bieg górny: stopnie 7–15 + dojście 16 -->
+          <g id="upper-treads">
+            <rect x="280" y="80" width="36" height="200" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="316" y="80" width="36" height="200" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="352" y="80" width="36" height="200" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="388" y="80" width="36" height="200" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="424" y="80" width="36" height="200" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="460" y="80" width="36" height="200" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="496" y="80" width="36" height="200" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="532" y="80" width="36" height="200" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="568" y="80" width="36" height="200" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="604" y="80" width="36" height="200" fill="#1f6b4a" fill-opacity="0.35" stroke="#1f6b4a" stroke-width="1.5"/>
+            <text x="298" y="185" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">7</text>
+            <text x="334" y="185" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">8</text>
+            <text x="370" y="185" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">9</text>
+            <text x="402" y="185" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">10</text>
+            <text x="438" y="185" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">11</text>
+            <text x="474" y="185" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">12</text>
+            <text x="510" y="185" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">13</text>
+            <text x="546" y="185" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">14</text>
+            <text x="582" y="185" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">15</text>
+            <text x="612" y="175" fill="#1f6b4a" font-size="11" font-weight="700" font-family="IBM Plex Mono, monospace">16</text>
+            <text x="612" y="190" fill="#1f6b4a" font-size="9" font-family="IBM Plex Mono, monospace">piętro</text>
+          </g>
+
+          <!-- Walking line -->
+          <path d="M180,430 L180,290 Q180,250 230,200 Q280,150 320,180 L600,180" fill="none" stroke="#1f6b4a" stroke-width="2.2" stroke-dasharray="8 5"/>
+
+          <!-- Pivot mark -->
+          <circle cx="280" cy="280" r="5" fill="#1a1f1c"/>
+          <text x="290" y="298" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5a635c">biegun zabiegu</text>
+
+          <!-- Width dimension on short arm -->
+          <line x1="60" y1="280" x2="60" y2="440" stroke="#5a635c" stroke-width="1"/>
+          <text x="48" y="365" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5a635c" transform="rotate(-90 48 365)">~88 (3×28+zapas)</text>
+
+          <!-- Steel wall lines -->
+          <line x1="84" y1="84" x2="636" y2="84" stroke="#3d4a52" stroke-width="3" stroke-linecap="square"/>
+          <line x1="84" y1="276" x2="276" y2="276" stroke="#3d4a52" stroke-width="3"/>
+          <line x1="84" y1="84" x2="84" y2="436" stroke="#3d4a52" stroke-width="3"/>
+          <line x1="276" y1="276" x2="276" y2="436" stroke="#3d4a52" stroke-width="3"/>
+          <line x1="636" y1="84" x2="636" y2="276" stroke="#3d4a52" stroke-width="3"/>
+
+          <text x="100" y="470" font-family="IBM Plex Mono, monospace" font-size="12" fill="#3d4a52">══ ceownik / kątownik przy ścianie</text>
+          <text x="400" y="470" font-family="IBM Plex Mono, monospace" font-size="12" fill="#1f6b4a">- - linia biegu (R≈55 od bieguna)</text>
+        </svg>
+        <div class="legend">
+          <span><i class="wood"></i>stopnie proste</span>
+          <span><i class="winder"></i>zabiegi 4–6</span>
+          <span><i class="steel"></i>prowadnice stalowe przy ścianach</span>
+          <span><i class="walk"></i>linia chodu</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="schemat-przekroj">
+      <h2>3. Schemat — przekrój / rozwinięcie linii biegu</h2>
+      <p class="section-lead">
+        Rozwinięcie po linii chodu. Podest = 0 cm długości. Zabiegi wnoszą wysokość w miejscu dawnego spocznika.
+        Grubość stropu przyjęta jak na rysunku ≈ 18,7 cm (spód stropu ≈ 261 cm).
+      </p>
+      <div class="panel">
+        <svg class="drawing" viewBox="0 0 900 420" role="img" aria-label="Przekrój rozwinięty schodów">
+          <!-- Ground and upper floor -->
+          <rect x="40" y="340" width="820" height="24" fill="#4a524c"/>
+          <rect x="480" y="60" width="380" height="22" fill="#9aa39c"/>
+          <!-- opening underside -->
+          <rect x="480" y="82" width="380" height="10" fill="#6d7670"/>
+
+          <text x="50" y="380" font-family="IBM Plex Mono, monospace" font-size="12" fill="#5a635c">poziom 0,00 (posadzka parteru)</text>
+          <text x="700" y="48" font-family="IBM Plex Mono, monospace" font-size="12" fill="#5a635c">+280,00 (piętro)</text>
+
+          <!-- Height marks -->
+          <line x1="30" y1="340" x2="30" y2="60" stroke="#5a635c" stroke-width="1"/>
+          <text x="18" y="210" text-anchor="middle" transform="rotate(-90 18 210)" font-family="IBM Plex Mono, monospace" font-size="12" fill="#5a635c">280</text>
+
+          <!-- Stairs: 16 rises, h=17.5 => 17.5*scale. Vertical: 280px for 280cm => 1px/cm; use 1px = 1cm from y=340 -->
+          <!-- Horizontal: lower 3*28=84; winders ~3*28=84 at walk; upper 9*28=252; total walk ~420 cm -->
+          <!-- Map 420cm to ~700px => scaleX = 700/420 ≈ 1.67 -->
+
+          <!-- Draw step profile -->
+          <g stroke="#8f4f1f" stroke-width="1.2" fill="#c47a3a">
+            <!-- helper via path sawtooth -->
+            <path d="M60,340
+              H106.8 V322.5
+              H153.6 V305
+              H200.4 V287.5
+              H247.2 V270
+              H294 V252.5
+              H340.8 V235
+              H387.6 V217.5
+              H434.4 V200
+              H481.2 V182.5
+              H528 V165
+              H574.8 V147.5
+              H621.6 V130
+              H668.4 V112.5
+              H715.2 V95
+              H762 V77.5
+              H808.8 V60
+              H860" fill="none" stroke="#c47a3a" stroke-width="3"/>
+          </g>
+
+          <!-- Risers as filled blocks (simplified sample + all outlines) -->
+          <g fill="#d8a06a" stroke="#8f4f1f" stroke-width="0.8" opacity="0.9">
+            <!-- generate visually important ones -->
+            <rect x="60" y="322.5" width="46.8" height="17.5"/>
+            <rect x="106.8" y="305" width="46.8" height="17.5"/>
+            <rect x="153.6" y="287.5" width="46.8" height="17.5"/>
+            <!-- winders zone highlight -->
+            <rect x="200.4" y="270" width="46.8" height="17.5" fill="#e8b07a"/>
+            <rect x="247.2" y="252.5" width="46.8" height="17.5" fill="#e8b07a"/>
+            <rect x="294" y="235" width="46.8" height="17.5" fill="#e8b07a"/>
+            <rect x="340.8" y="217.5" width="46.8" height="17.5"/>
+            <rect x="387.6" y="200" width="46.8" height="17.5"/>
+            <rect x="434.4" y="182.5" width="46.8" height="17.5"/>
+            <rect x="481.2" y="165" width="46.8" height="17.5"/>
+            <rect x="528" y="147.5" width="46.8" height="17.5"/>
+            <rect x="574.8" y="130" width="46.8" height="17.5"/>
+            <rect x="621.6" y="112.5" width="46.8" height="17.5"/>
+            <rect x="668.4" y="95" width="46.8" height="17.5"/>
+            <rect x="715.2" y="77.5" width="46.8" height="17.5"/>
+            <rect x="762" y="60" width="46.8" height="17.5" fill="#1f6b4a" fill-opacity="0.35"/>
+          </g>
+
+          <!-- Steel stringer under -->
+          <path d="M55,348 L55,330 L200,275 L480,130 L820,68" fill="none" stroke="#3d4a52" stroke-width="4"/>
+
+          <!-- Dimension h -->
+          <line x1="95" y1="340" x2="95" y2="322.5" stroke="#1a1f1c" stroke-width="1"/>
+          <text x="110" y="335" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1a1f1c">h=17,5</text>
+          <line x1="60" y1="355" x2="106.8" y2="355" stroke="#1a1f1c" stroke-width="1"/>
+          <text x="70" y="368" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1a1f1c">s=28</text>
+
+          <!-- Winder bracket -->
+          <line x1="200" y1="390" x2="341" y2="390" stroke="#c47a3a" stroke-width="2"/>
+          <text x="270" y="408" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8f4f1f">zabiegi 4–6 (bez podestu)</text>
+
+          <!-- Opening length -->
+          <line x1="480" y1="30" x2="860" y2="30" stroke="#5a635c" stroke-width="1"/>
+          <text x="670" y="24" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#5a635c">otwór ~330 (w rzucie biegu górnego)</text>
+
+          <!-- Headroom hint -->
+          <path d="M220,287 L220,82 L480,82" fill="none" stroke="#b04040" stroke-width="1.2" stroke-dasharray="4 3"/>
+          <text x="250" y="100" font-family="IBM Plex Mono, monospace" font-size="11" fill="#b04040">kontrola przejścia ≥ 200 cm</text>
+        </svg>
+      </div>
+    </section>
+
+    <section id="zabiegi">
+      <h2>4. Geometria zabiegów (stopnie 4–6)</h2>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Założenia</h3>
+          <ul class="clean">
+            <li>Zakres skrętu: <strong>90°</strong> → 3 stopnie × <strong>30°</strong></li>
+            <li>Szerokość biegu (ściana–ściana): <strong>110 cm</strong></li>
+            <li>Biegun (punkt zbiegnięcia nosków): przy wewnętrznym narożniku klatki</li>
+            <li>Linia biegu: <strong>R = 55 cm</strong> od bieguna → głębokość na linii chodu ≈ <strong>28,8 cm</strong> (jak bieg prosty)</li>
+            <li>Minimum przy biegunie: pozostawić klin / podcięcie nie węższe niż <strong>10 cm</strong> na nosku (albo trzpień / słupek)</li>
+            <li>Na zewnętrzu (R = 110): głębokość ≈ <strong>57–58 cm</strong></li>
+          </ul>
+          <div class="callout">
+            Zabiegi rysować od bieguna: trzy promienie co 30°. Noski = te promienie. Podstopnice = powierzchnie pionowe między noskami.
+          </div>
+        </div>
+        <div class="panel">
+          <svg class="drawing" viewBox="0 0 360 320" aria-label="Geometria zabiegu">
+            <rect x="40" y="40" width="220" height="220" fill="none" stroke="#1a1f1c" stroke-width="2"/>
+            <!-- pivot at bottom-right of square = inner corner -->
+            <circle cx="260" cy="260" r="4" fill="#1a1f1c"/>
+            <!-- rays at 0, 30, 60, 90 degrees from left-going to up-going -->
+            <!-- 0° along -X, 90° along -Y -->
+            <g stroke="#8f4f1f" stroke-width="1.5">
+              <line x1="260" y1="260" x2="40" y2="260"/>
+              <line x1="260" y1="260" x2="69.6" y2="150"/>
+              <line x1="260" y1="260" x2="150" y2="69.6"/>
+              <line x1="260" y1="260" x2="260" y2="40"/>
+            </g>
+            <path d="M40,260 L260,260 L69.6,150 Z" fill="#e8b07a" opacity="0.85" stroke="#8f4f1f"/>
+            <path d="M260,260 L69.6,150 L150,69.6 Z" fill="#e0a36a" opacity="0.85" stroke="#8f4f1f"/>
+            <path d="M260,260 L150,69.6 L260,40 Z" fill="#d99858" opacity="0.85" stroke="#8f4f1f"/>
+            <!-- walking arc -->
+            <path d="M205,260 A55,55 0 0 0 260,205" fill="none" stroke="#1f6b4a" stroke-width="2" stroke-dasharray="5 4"/>
+            <circle cx="205" cy="260" r="3" fill="#1f6b4a"/>
+            <text x="70" y="245" font-size="14" font-weight="700">4</text>
+            <text x="130" y="175" font-size="14" font-weight="700">5</text>
+            <text x="210" y="120" font-size="14" font-weight="700">6</text>
+            <text x="270" y="275" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5a635c">biegun</text>
+            <text x="40" y="300" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1f6b4a">łuk linii biegu R=55</text>
+            <text x="280" y="60" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5a635c">30°</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:1rem">
+        <h3>Tabela wysokości wszystkich stopni</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Nr</th>
+              <th>Typ</th>
+              <th class="num">Wys. powierzchni [cm]</th>
+              <th class="num">Podstopnica [cm]</th>
+              <th>Uwagi wykonawcze</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>prosty</td><td class="num">17,5</td><td class="num">17,5</td><td>start od posadzki; kotwy w posadzce / belka startowa</td></tr>
+            <tr><td>2</td><td>prosty</td><td class="num">35,0</td><td class="num">17,5</td><td>s = 28</td></tr>
+            <tr><td>3</td><td>prosty</td><td class="num">52,5</td><td class="num">17,5</td><td>ostatni prosty przed zabiegiem</td></tr>
+            <tr class="winder"><td>4</td><td>zabiegowy</td><td class="num">70,0</td><td class="num">17,5</td><td>klin 0–30°</td></tr>
+            <tr class="winder"><td>5</td><td>zabiegowy</td><td class="num">87,5</td><td class="num">17,5</td><td>klin 30–60°</td></tr>
+            <tr class="winder"><td>6</td><td>zabiegowy</td><td class="num">105,0</td><td class="num">17,5</td><td>klin 60–90°</td></tr>
+            <tr><td>7</td><td>prosty</td><td class="num">122,5</td><td class="num">17,5</td><td>wejście w otwór stropu — kontrola przejścia</td></tr>
+            <tr><td>8</td><td>prosty</td><td class="num">140,0</td><td class="num">17,5</td><td></td></tr>
+            <tr><td>9</td><td>prosty</td><td class="num">157,5</td><td class="num">17,5</td><td></td></tr>
+            <tr><td>10</td><td>prosty</td><td class="num">175,0</td><td class="num">17,5</td><td></td></tr>
+            <tr><td>11</td><td>prosty</td><td class="num">192,5</td><td class="num">17,5</td><td></td></tr>
+            <tr><td>12</td><td>prosty</td><td class="num">210,0</td><td class="num">17,5</td><td></td></tr>
+            <tr><td>13</td><td>prosty</td><td class="num">227,5</td><td class="num">17,5</td><td></td></tr>
+            <tr><td>14</td><td>prosty</td><td class="num">245,0</td><td class="num">17,5</td><td></td></tr>
+            <tr><td>15</td><td>prosty</td><td class="num">262,5</td><td class="num">17,5</td><td>przed posadzką piętra</td></tr>
+            <tr class="top"><td>16</td><td>dojście</td><td class="num">280,0</td><td class="num">17,5</td><td>równy z posadzką / progiem otworu</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="konstrukcja">
+      <h2>5. Konstrukcja stalowa — schemat do spawania / montażu</h2>
+      <p class="section-lead">
+        Schody oparte na ramie ze stali przymocowanej do ścian klatki. Drewno (stopnice + podstopnice) jest wypełnieniem — nie nośnikiem głównym.
+        Poniżej kolejność pod ślusarza (spawanie + kotwienie).
+      </p>
+
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Elementy nośne</h3>
+          <ol class="steps">
+            <li><strong>Prowadnice ścienne</strong> — ceownik C100 lub C120 (ew. 2× kątownik 80×80×8 jako „ceownik złożony”) wzdłuż obu ścian biegu, na całej długości dolnego i górnego ramienia oraz w strefie zabiegu.</li>
+            <li><strong>Żebra stopni</strong> — kątownik 50×50×5 / 60×60×6 lub płaskownik 8×60 przyspawany / skręcony do prowadnic; rozstaw = głębokość stopnia (28 cm w prostych).</li>
+            <li><strong>Zabieg</strong> — żebra promieniowe od bieguna do prowadnicy zewnętrznej (3 sektory). Biegun: słupek ∅48–60 mm lub kątownik 60×60 kotwiony do posadzki / ściany narożnej.</li>
+            <li><strong>Belka startowa</strong> — ceownik / kątownik przy posadzce parteru, zakotwiony w posadzce lub ścianach.</li>
+            <li><strong>Belka końcowa</strong> — oparcie o wieniec / krawędź stropu w otworze 330×110 (kątownik 80×80 lub ceownik do czoła stropu).</li>
+            <li><strong>Stężenia</strong> — skosy z kątownika 40×40 w strefie zabiegu i pod biegiem górnym, żeby rama nie „pływała” przy skręcaniu.</li>
+          </ol>
+        </div>
+        <div class="panel">
+          <svg class="drawing" viewBox="0 0 420 360" aria-label="Schemat ramy stalowej">
+            <!-- walls -->
+            <rect x="50" y="40" width="300" height="140" fill="rgba(61,74,82,0.06)" stroke="#1a1f1c" stroke-width="2"/>
+            <rect x="50" y="180" width="120" height="120" fill="rgba(61,74,82,0.06)" stroke="#1a1f1c" stroke-width="2"/>
+            <!-- wall channels -->
+            <path d="M55,45 H345 V175 H165 V295 H55 Z" fill="none" stroke="#3d4a52" stroke-width="6"/>
+            <!-- ribs straight upper -->
+            <g stroke="#3d4a52" stroke-width="2">
+              <line x1="175" y1="50" x2="175" y2="170"/>
+              <line x1="205" y1="50" x2="205" y2="170"/>
+              <line x1="235" y1="50" x2="235" y2="170"/>
+              <line x1="265" y1="50" x2="265" y2="170"/>
+              <line x1="295" y1="50" x2="295" y2="170"/>
+              <line x1="325" y1="50" x2="325" y2="170"/>
+            </g>
+            <!-- winder rays -->
+            <g stroke="#c47a3a" stroke-width="2.5">
+              <line x1="170" y1="180" x2="55" y2="180"/>
+              <line x1="170" y1="180" x2="70" y2="100"/>
+              <line x1="170" y1="180" x2="120" y2="55"/>
+              <line x1="170" y1="180" x2="170" y2="55"/>
+            </g>
+            <circle cx="170" cy="180" r="7" fill="#1a1f1c"/>
+            <!-- lower ribs -->
+            <g stroke="#3d4a52" stroke-width="2">
+              <line x1="55" y1="210" x2="165" y2="210"/>
+              <line x1="55" y1="240" x2="165" y2="240"/>
+              <line x1="55" y1="270" x2="165" y2="270"/>
+            </g>
+            <!-- anchors -->
+            <g fill="#1f6b4a">
+              <circle cx="55" cy="70" r="4"/><circle cx="55" cy="120" r="4"/>
+              <circle cx="55" cy="200" r="4"/><circle cx="55" cy="250" r="4"/>
+              <circle cx="100" cy="295" r="4"/><circle cx="140" cy="295" r="4"/>
+              <circle cx="200" cy="45" r="4"/><circle cx="260" cy="45" r="4"/><circle cx="320" cy="45" r="4"/>
+              <circle cx="345" cy="90" r="4"/><circle cx="345" cy="140" r="4"/>
+            </g>
+            <text x="50" y="330" font-family="IBM Plex Mono, monospace" font-size="11" fill="#3d4a52">grube: prowadnice ścienne</text>
+            <text x="50" y="348" font-family="IBM Plex Mono, monospace" font-size="11" fill="#c47a3a">pomarańcz: żebra zabiegu</text>
+            <text x="230" y="348" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1f6b4a">● kotwy chemiczne</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:1rem">
+        <h3>Przekrój typowego stopnia prostego (ściana–ściana)</h3>
+        <svg class="drawing" viewBox="0 0 720 260" aria-label="Przekrój stopnia">
+          <!-- walls -->
+          <rect x="40" y="30" width="28" height="200" fill="#b7beb8"/>
+          <rect x="652" y="30" width="28" height="200" fill="#b7beb8"/>
+          <text x="54" y="20" text-anchor="middle" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5a635c">ściana</text>
+          <text x="666" y="20" text-anchor="middle" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5a635c">ściana</text>
+
+          <!-- channels -->
+          <path d="M70,60 v120 h16 v-20 h-8 v-80 h8 v-20 z" fill="#3d4a52"/>
+          <path d="M650,60 v20 h-8 v80 h8 v20 h-16 v-120 z" fill="#3d4a52"/>
+
+          <!-- cross angle -->
+          <rect x="86" y="110" width="548" height="10" fill="#3d4a52"/>
+          <rect x="86" y="120" width="10" height="40" fill="#3d4a52"/>
+          <rect x="624" y="120" width="10" height="40" fill="#3d4a52"/>
+
+          <!-- tread board -->
+          <rect x="78" y="88" width="564" height="22" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1.5"/>
+          <!-- riser board -->
+          <rect x="78" y="110" width="14" height="70" fill="#e0a36a" stroke="#8f4f1f" stroke-width="1.2"/>
+
+          <!-- dims -->
+          <line x1="78" y1="220" x2="642" y2="220" stroke="#1a1f1c" stroke-width="1"/>
+          <text x="360" y="240" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#1a1f1c">110 cm (w świetle ścian — cały bieg)</text>
+          <text x="360" y="78" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8f4f1f">stopnica deska 40 mm</text>
+          <text x="120" y="155" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8f4f1f">podstopnica</text>
+          <text x="200" y="145" font-family="IBM Plex Mono, monospace" font-size="12" fill="#3d4a52">kątownik / żebro</text>
+          <text x="90" y="50" font-family="IBM Plex Mono, monospace" font-size="11" fill="#3d4a52">C100/C120</text>
+        </svg>
+        <ul class="clean">
+          <li>Stopnica: deska <strong>40 mm</strong> (jak na rysunku referencyjnym), szer. biegu 110 cm (− luz montażowy 2×3–5 mm).</li>
+          <li>Podstopnica: deska <strong>18–22 mm</strong> (lub 28 mm), wysokość robocza ≈ 17,5 cm minus ewentualne wpustowanie w stopnicę.</li>
+          <li>Mocowanie drewna do stali: wkręty do metalu / otwory podłużne + taśma EPDM / podkładki dystansowe (cisza, dylatacja).</li>
+          <li>Kotwy prowadnic: <strong>chemiczne M10–M12</strong> co 40–50 cm, min. 8 cm w beton / odpowiednio w mur.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="montaz">
+      <h2>6. Kolejność spawania i montażu konstrukcji</h2>
+      <div class="panel">
+        <ol class="steps">
+          <li><strong>Odbiór wymiarów natury</strong> — pomierzyć faktyczne 330×110 otworu, pion ścian, wysokość 280 cm (posadzka–posadzka), grubość stropu. Przenieść na rysunek wykonawczy 1:10 / 1:20.</li>
+          <li><strong>Wytyczyć biegun zabiegu i linię biegu</strong> na posadzce (R = 55 cm). Zaznaczyć noski wszystkich 16 podniesień.</li>
+          <li><strong>Zamontować prowadnice ścienne</strong> (ceowniki/kątowniki) — najpierw bieg dolny, potem zabieg, potem bieg górny; wypoziomować laserem, zachować spadki zgodne z h = 17,5.</li>
+          <li><strong>Wstawić słupek bieguna</strong> i przyspawać / skręcić żebra promieniowe zabiegu (stopnie 4–6).</li>
+          <li><strong>Dołożyć żebra stopni prostych</strong> co 28 cm w osiach nosków; stężyć skosami.</li>
+          <li><strong>Oprzeć koniec górny o strop</strong> — belka czołowa w otworze; sprawdzić przejście (prześwit) nad zabiegiem i dolnymi stopniami (≥ 200 cm w świetle po wykończeniu).</li>
+          <li><strong>Antykorozyjne</strong> — oczyścić spawy, pomalować konstrukcję (podkład + farba) przed montażem drewna.</li>
+          <li><strong>Montaż podstopnic, potem stopnic</strong> — pełne zamknięcie czoła; klej + wkręty; noski w jednej linii na zabiegu.</li>
+          <li><strong>Balustrada</strong> (osobno): słupki do stali lub ściany; wysokość ≥ 90 cm; przy zabiegu prowadzić poręcz po łuku / segmentach.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="zestawienie">
+      <h2>7. Zestawienie materiałów (orientacyjne)</h2>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Stal</h3>
+          <table>
+            <thead><tr><th>Element</th><th>Profil</th><th class="num">Ilość (orient.)</th></tr></thead>
+            <tbody>
+              <tr><td>Prowadnice ścienne</td><td>C100 / C120 lub 2× L80×80×8</td><td class="num">~12–14 m</td></tr>
+              <tr><td>Żebra stopni prostych</td><td>L50×50×5 / L60×60×6</td><td class="num">12 szt. × 110 cm</td></tr>
+              <tr><td>Żebra zabiegu</td><td>L50×50×5</td><td class="num">4 promienie (+ ewentualne pośrednie)</td></tr>
+              <tr><td>Słupek bieguna</td><td>rura ∅48–60 / L60×60</td><td class="num">1 szt. ~110 cm</td></tr>
+              <tr><td>Belka start + czoło stropu</td><td>C100 / L80×80</td><td class="num">2 szt.</td></tr>
+              <tr><td>Stężenia</td><td>L40×40×4</td><td class="num">~6–8 m</td></tr>
+              <tr><td>Kotwy chemiczne</td><td>M10–M12</td><td class="num">~30–40 szt.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel">
+          <h3>Drewno</h3>
+          <table>
+            <thead><tr><th>Element</th><th>Wymiar</th><th class="num">Ilość</th></tr></thead>
+            <tbody>
+              <tr><td>Stopnice proste</td><td>110 × 28 × 4 cm</td><td class="num">12 szt. (1–3, 7–15)</td></tr>
+              <tr><td>Stopnice zabiegowe</td><td>klin z płyty/deski 40 mm wg szablonu 30°</td><td class="num">3 szt.</td></tr>
+              <tr><td>Stopnica dojścia / nakładka</td><td>wg krawędzi stropu</td><td class="num">1 szt.</td></tr>
+              <tr><td>Podstopnice proste</td><td>110 × ~17,5 × 1,8–2,8 cm</td><td class="num">13 szt.</td></tr>
+              <tr><td>Podstopnice zabiegowe</td><td>trapezy / sektory</td><td class="num">3 szt.</td></tr>
+            </tbody>
+          </table>
+          <p style="margin:0.8rem 0 0;color:var(--muted);font-size:0.9rem">
+            Gatunek: dąb / jesion / modrzew (stopnice), podstopnice mogą być z tego samego drewna lub sklejki liściastej oklejonej.
+            Przed rozkrojem zabiegów zrobić <strong>szablony z płyty 4–6 mm</strong> po obmiarze natury.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="argumenty">
+      <h2>8. Co powiedzieć projektantowi (podest vs zabieg)</h2>
+      <div class="panel">
+        <ul class="clean">
+          <li><strong>Podest ~96 cm</strong> w Waszym rysunku to prawie metr płaskiej półki, która <em>nie skraca</em> drogi w pionie — tylko zajmuje plan.</li>
+          <li><strong>Trzy zabiegi</strong> w tym samym narożniku dają <strong>+52,5 cm wysokości</strong> (3 × 17,5) przy porównywalnym zajęciu narożnika — to jest właśnie oszczędność miejsca przy niskiej kondygnacji / ciasnej klatce.</li>
+          <li>Otwór stropu <strong>330×110</strong> zostaje; zmieniamy tylko geometrię biegu pod spodem i w narożniku.</li>
+          <li>Konstrukcja stalowa przy ścianach jest typowa dla pełnych stopni z podstopnicami i nie wymaga drewnianych policzków „na wylot” jak na wizualizacji z podestem.</li>
+          <li>Przy h ≈ 17,5–18,7 cm oba warianty mieszczą się w praktyce; spór o podest nie wynika z niemożliwości zabiegu, tylko z przyzwyczajenia do spocznika.</li>
+        </ul>
+        <div class="callout">
+          Ten dokument to <strong>schemat wykonawczy / wytyczne do sprawiania</strong>, nie zastępuje ostatecznego projektu budowlanego ani obliczeń statycznych przy nietypowych ścianach.
+          Przed spawaniem: obmiar natury + ewentualna konsultacja ze ślusarzem / konstruktorem pod kotwy i nośność ścian.
+        </div>
+      </div>
+    </section>
+
+    <section id="wariant-b">
+      <h2>Dodatek — przeliczenie przy h = 18,67 cm (15 podniesień)</h2>
+      <p class="section-lead">Jeśli projektant absolutnie chce zostać przy liczbie z kalk.pro, zabiegi da się zrobić tak samo — tylko bez podestu:</p>
+      <div class="panel">
+        <table>
+          <thead><tr><th>Parametr</th><th class="num">Wartość</th></tr></thead>
+          <tbody>
+            <tr><td>Liczba podniesień</td><td class="num">15</td></tr>
+            <tr><td>h</td><td class="num">18,67 cm</td></tr>
+            <tr><td>s (Blondel ≈ 63)</td><td class="num">≈ 25,7 cm</td></tr>
+            <tr><td>Układ</td><td class="num">3 proste + 3 zabiegi + 8 prostych + dojście = 15</td></tr>
+            <tr><td>Wys. po zabiegu (stopień 6)</td><td class="num">112 cm</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      <p>
+        Opracowanie na podstawie wymiarów z rysunku: H = 280 cm, otwór 330×110 cm, bez podestu, stopnie pełne,
+        konstrukcja stalowa przy ścianach. Plik: <span class="mono">schody-zabiegowe.html</span> — otwórz w przeglądarce i drukuj do PDF.
+      </p>
+    </footer>
+  </div>
+</body>
+</html>
