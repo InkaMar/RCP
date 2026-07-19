@@ -439,102 +439,105 @@
     <section id="schemat-rzut">
       <h2>2. Schemat — rzut z góry</h2>
       <p class="section-lead">
-        Skala jednakowa: <span class="mono">1 cm = 1,6 px</span>. Wszystkie stopnie proste (1–2 i 6–15) mają w rzucie
-        <strong>głębokość 28 cm</strong> — ten sam prostokąt. Zabiegi w narożniku 110×110 cm.
+        Skala jednakowa: <span class="mono">1 cm = 1,6 px</span>. Bieg <strong>skręca w lewo</strong> —
+        wchodzisz na 2 proste od dołu (po prawej), zabieg w róg, potem bieg górny w lewo.
+        Wszystkie proste (1–2 i 6–15) mają <strong>głębokość 28 cm</strong>.
       </p>
       <div class="panel">
         <!--
-          Skala 1.6 px/cm:
-          110 → 176, 28 → 44.8, 56 → 89.6, 280 → 448, 330 → 528, 50 → 80
-          Pivot (róg) = (226, 256) = ox+176, oy+176 with ox=50, oy=80
+          Skala 1.6 px/cm. Bieg SKRĘCA W LEWO:
+          start dolny po prawej, zabieg w prawy-dolny róg, bieg górny biegnie w LEWO.
+          Pivot (róg) = (578, 256). Bieg górny 10×44.8 px w lewo do x=130, dojście do x=50.
         -->
-        <svg class="drawing" viewBox="0 0 900 480" role="img" aria-label="Rzut schodów zabiegowych w skali">
-          <!-- Otwór stropu 330×110 nad biegiem górnym (od bieguna w prawo) -->
-          <rect x="226" y="80" width="528" height="176" fill="rgba(31,107,74,0.06)" stroke="#1f6b4a" stroke-width="1.5" stroke-dasharray="6 4"/>
-          <text x="490" y="68" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#1f6b4a">OTWÓR STROPU 330 × 110 (skala)</text>
-          <line x1="226" y1="48" x2="754" y2="48" stroke="#1f6b4a" stroke-width="1"/>
-          <text x="490" y="40" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#1f6b4a">330 cm</text>
-          <line x1="770" y1="80" x2="770" y2="256" stroke="#5a635c" stroke-width="1"/>
-          <text x="784" y="172" font-family="IBM Plex Mono, monospace" font-size="12" fill="#5a635c">110</text>
+        <svg class="drawing" viewBox="0 0 900 480" role="img" aria-label="Rzut schodów zabiegowych — skręt w lewo">
+          <!-- Otwór stropu 330×110 nad biegiem górnym (po lewej) -->
+          <rect x="50" y="80" width="528" height="176" fill="rgba(31,107,74,0.06)" stroke="#1f6b4a" stroke-width="1.5" stroke-dasharray="6 4"/>
+          <text x="314" y="68" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#1f6b4a">OTWÓR STROPU 330 × 110 (skala)</text>
+          <line x1="50" y1="48" x2="578" y2="48" stroke="#1f6b4a" stroke-width="1"/>
+          <text x="314" y="40" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#1f6b4a">330 cm</text>
+          <line x1="34" y1="80" x2="34" y2="256" stroke="#5a635c" stroke-width="1"/>
+          <text x="20" y="172" font-family="IBM Plex Mono, monospace" font-size="12" fill="#5a635c">110</text>
 
-          <!-- Obrys klatki L: narożnik + bieg dolny -->
-          <rect x="50" y="80" width="176" height="176" fill="none" stroke="#1a1f1c" stroke-width="2.2"/>
-          <rect x="50" y="256" width="176" height="89.6" fill="none" stroke="#1a1f1c" stroke-width="2.2"/>
-          <rect x="226" y="80" width="528" height="176" fill="none" stroke="#1a1f1c" stroke-width="2.2"/>
+          <!-- Obrys klatki L: narożnik po prawej + bieg dolny -->
+          <rect x="578" y="80" width="176" height="176" fill="none" stroke="#1a1f1c" stroke-width="2.2"/>
+          <rect x="578" y="256" width="176" height="89.6" fill="none" stroke="#1a1f1c" stroke-width="2.2"/>
+          <rect x="50" y="80" width="528" height="176" fill="none" stroke="#1a1f1c" stroke-width="2.2"/>
 
-          <!-- Bieg dolny: 2 × 28 cm = 2 × 44.8 px -->
+          <!-- Bieg dolny: 2 × 28 cm, wchodzisz od dołu -->
           <g id="lower">
-            <rect x="50" y="300.8" width="176" height="44.8" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1.2"/>
-            <text x="138" y="328" text-anchor="middle" fill="#fff" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">1 · 28 cm</text>
-            <rect x="50" y="256" width="176" height="44.8" fill="#cc843f" stroke="#8f4f1f" stroke-width="1.2"/>
-            <text x="138" y="283" text-anchor="middle" fill="#fff" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">2 · 28 cm</text>
+            <rect x="578" y="300.8" width="176" height="44.8" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1.2"/>
+            <text x="666" y="328" text-anchor="middle" fill="#fff" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">1 · 28 cm</text>
+            <rect x="578" y="256" width="176" height="44.8" fill="#cc843f" stroke="#8f4f1f" stroke-width="1.2"/>
+            <text x="666" y="283" text-anchor="middle" fill="#fff" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">2 · 28 cm</text>
           </g>
 
-          <!-- Zabiegi 3–5 w róg (biegun 226,256) -->
+          <!-- Zabiegi 3–5 w prawy-dolny róg (biegun 578,256), skręt w lewo -->
           <g id="winders">
-            <path d="M226,256 L50,256 L50,164.5 Z" fill="#e8b07a" stroke="#8f4f1f" stroke-width="1.3"/>
-            <path d="M226,256 L50,164.5 L50,80 L134.5,80 Z" fill="#e0a36a" stroke="#8f4f1f" stroke-width="1.3"/>
-            <path d="M226,256 L134.5,80 L226,80 Z" fill="#d99858" stroke="#8f4f1f" stroke-width="1.3"/>
-            <text x="120" y="235" fill="#1a1f1c" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">3</text>
-            <text x="100" y="145" fill="#1a1f1c" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">4</text>
-            <text x="185" y="115" fill="#1a1f1c" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">5</text>
+            <path d="M578,256 L754,256 L754,164.5 Z" fill="#e8b07a" stroke="#8f4f1f" stroke-width="1.3"/>
+            <path d="M578,256 L754,164.5 L754,80 L669.5,80 Z" fill="#e0a36a" stroke="#8f4f1f" stroke-width="1.3"/>
+            <path d="M578,256 L669.5,80 L578,80 Z" fill="#d99858" stroke="#8f4f1f" stroke-width="1.3"/>
+            <text x="676" y="235" fill="#1a1f1c" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">3</text>
+            <text x="696" y="145" fill="#1a1f1c" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">4</text>
+            <text x="608" y="115" fill="#1a1f1c" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">5</text>
           </g>
 
-          <!-- Bieg górny: 10 × 28 cm = 10 × 44.8 px, potem dojście ~50 cm w otworze -->
+          <!-- Bieg górny: 10 × 28 cm w LEWO od bieguna, potem dojście -->
           <g id="upper-treads">
-            <rect x="226" y="80" width="44.8" height="176" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="270.8" y="80" width="44.8" height="176" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="315.6" y="80" width="44.8" height="176" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="360.4" y="80" width="44.8" height="176" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="405.2" y="80" width="44.8" height="176" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="450" y="80" width="44.8" height="176" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="494.8" y="80" width="44.8" height="176" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="539.6" y="80" width="44.8" height="176" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="584.4" y="80" width="44.8" height="176" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="629.2" y="80" width="44.8" height="176" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="674" y="80" width="80" height="176" fill="#1f6b4a" fill-opacity="0.3" stroke="#1f6b4a" stroke-width="1.5"/>
-            <text x="248" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">6</text>
-            <text x="293" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">7</text>
-            <text x="338" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">8</text>
-            <text x="382" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">9</text>
-            <text x="427" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">10</text>
-            <text x="472" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">11</text>
-            <text x="517" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">12</text>
-            <text x="561" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">13</text>
-            <text x="606" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">14</text>
-            <text x="651" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">15</text>
-            <text x="700" y="165" fill="#1f6b4a" font-size="12" font-weight="700" font-family="IBM Plex Mono, monospace">16</text>
-            <text x="692" y="182" fill="#1f6b4a" font-size="10" font-family="IBM Plex Mono, monospace">piętro</text>
+            <rect x="533.2" y="80" width="44.8" height="176" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="488.4" y="80" width="44.8" height="176" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="443.6" y="80" width="44.8" height="176" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="398.8" y="80" width="44.8" height="176" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="354" y="80" width="44.8" height="176" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="309.2" y="80" width="44.8" height="176" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="264.4" y="80" width="44.8" height="176" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="219.6" y="80" width="44.8" height="176" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="174.8" y="80" width="44.8" height="176" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="130" y="80" width="44.8" height="176" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="50" y="80" width="80" height="176" fill="#1f6b4a" fill-opacity="0.3" stroke="#1f6b4a" stroke-width="1.5"/>
+            <text x="551" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">6</text>
+            <text x="506" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">7</text>
+            <text x="461" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">8</text>
+            <text x="417" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">9</text>
+            <text x="368" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">10</text>
+            <text x="323" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">11</text>
+            <text x="278" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">12</text>
+            <text x="234" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">13</text>
+            <text x="189" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">14</text>
+            <text x="144" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">15</text>
+            <text x="78" y="165" fill="#1f6b4a" font-size="12" font-weight="700" font-family="IBM Plex Mono, monospace">16</text>
+            <text x="70" y="182" fill="#1f6b4a" font-size="10" font-family="IBM Plex Mono, monospace">piętro</text>
           </g>
 
           <!-- Wymiar głębokości jednego stopnia górnego -->
-          <line x1="450" y1="270" x2="494.8" y2="270" stroke="#1a1f1c" stroke-width="1.5"/>
-          <text x="472" y="288" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#1a1f1c">28 cm</text>
-          <text x="472" y="304" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5a635c">jak 1 i 2</text>
+          <line x1="309.2" y1="270" x2="354" y2="270" stroke="#1a1f1c" stroke-width="1.5"/>
+          <text x="331" y="288" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#1a1f1c">28 cm</text>
+          <text x="331" y="304" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5a635c">jak 1 i 2</text>
 
-          <!-- Linia biegu -->
-          <path d="M138,330 L138,270 Q138,230 180,190 Q226,150 270,168 L700,168" fill="none" stroke="#1f6b4a" stroke-width="2.2" stroke-dasharray="8 5"/>
+          <!-- Linia biegu: z dołu w górę, skręt w LEWO, w lewo -->
+          <path d="M666,330 L666,270 Q666,230 624,190 Q578,150 534,168 L120,168" fill="none" stroke="#1f6b4a" stroke-width="2.2" stroke-dasharray="8 5"/>
+          <!-- strzałka kierunku (w lewo) -->
+          <path d="M132,162 L118,168 L132,174" fill="none" stroke="#1f6b4a" stroke-width="2.2"/>
 
-          <circle cx="226" cy="256" r="5" fill="#1a1f1c"/>
-          <text x="238" y="274" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5a635c">biegun = RÓG ŚCIAN</text>
+          <circle cx="578" cy="256" r="5" fill="#1a1f1c"/>
+          <text x="470" y="274" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5a635c">biegun = RÓG ŚCIAN</text>
 
-          <line x1="30" y1="256" x2="30" y2="345.6" stroke="#5a635c" stroke-width="1"/>
-          <text x="18" y="305" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5a635c" transform="rotate(-90 18 305)">56 = 2×28</text>
+          <line x1="774" y1="256" x2="774" y2="345.6" stroke="#5a635c" stroke-width="1"/>
+          <text x="788" y="305" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5a635c" transform="rotate(90 788 305)">56 = 2×28</text>
 
-          <!-- Ściany (grube) przy biegu -->
+          <!-- Ściany (grube) -->
           <line x1="50" y1="80" x2="754" y2="80" stroke="#3d4a52" stroke-width="4"/>
-          <line x1="50" y1="256" x2="226" y2="256" stroke="#3d4a52" stroke-width="4"/>
-          <line x1="50" y1="80" x2="50" y2="345.6" stroke="#3d4a52" stroke-width="4"/>
-          <line x1="226" y1="256" x2="226" y2="345.6" stroke="#3d4a52" stroke-width="4"/>
+          <line x1="578" y1="256" x2="754" y2="256" stroke="#3d4a52" stroke-width="4"/>
+          <line x1="754" y1="80" x2="754" y2="345.6" stroke="#3d4a52" stroke-width="4"/>
+          <line x1="578" y1="256" x2="578" y2="345.6" stroke="#3d4a52" stroke-width="4"/>
 
-          <text x="50" y="400" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8a3b12">Każdy prosty stopień (1–2 i 6–15) = 28 cm głębokości · 10×28 = 280 cm + 50 cm dojścia = 330</text>
+          <text x="50" y="400" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8a3b12">SKRĘT W LEWO · każdy prosty stopień (1–2 i 6–15) = 28 cm · 10×28 = 280 + 50 dojścia = 330</text>
           <text x="50" y="420" font-family="IBM Plex Mono, monospace" font-size="12" fill="#3d4a52">grube linie = ściany · profil zig‑zag pokazany w sekcji 5</text>
         </svg>
         <div class="legend">
           <span><i class="wood"></i>proste 28 cm (ta sama skala)</span>
-          <span><i class="winder"></i>zabiegi 3–5 → w róg</span>
+          <span><i class="winder"></i>zabiegi 3–5 → w róg (skręt w lewo)</span>
           <span><i class="steel"></i>ściany klatki</span>
-          <span><i class="walk"></i>linia chodu</span>
+          <span><i class="walk"></i>linia chodu →</span>
         </div>
       </div>
     </section>
