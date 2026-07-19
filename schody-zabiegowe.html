@@ -327,9 +327,9 @@
       <p class="eyebrow">Projekt roboczy · bez podestu · otwór 330×110</p>
       <h1>Schody zabiegowe</h1>
       <p class="lead">
-        Wariant zamiast schodów z podestem: pełne stopnie z podstopnicami na konstrukcji stalowej
-        (kątowniki / ceowniki) zamocowanej do ścian, wypełniającej całą szerokość klatki 110&nbsp;cm.
-        Podest usunięty — w narożniku trzy stopnie zabiegowe.
+        Zamiast podestu: <strong>schody zabiegowe</strong> na spawanej ramie ze stali
+        <strong>profil zamknięty, policzki piłokształtne (zig‑zag)</strong> — jak na zdjęciu referencyjnym.
+        Zabieg wchodzi <strong>w róg do ściany</strong>. Stopnie pełne (deska + podstopnica), szerokość biegu 110&nbsp;cm.
       </p>
       <div class="cta-row">
         <a class="btn" href="#schemat-rzut">Rzut zabiegów</a>
@@ -341,7 +341,7 @@
         <div class="kpi"><b>280 cm</b><span>wysokość kondygnacji</span></div>
         <div class="kpi"><b>330×110</b><span>otwór w stropie [cm]</span></div>
         <div class="kpi"><b>16 × 17,5</b><span>podniesień × wysokość [cm]</span></div>
-        <div class="kpi"><b>28 cm</b><span>głębokość biegu prostego</span></div>
+        <div class="kpi"><b>80×40</b><span>profil policzków (zig‑zag)</span></div>
       </div>
       <nav class="toc" aria-label="Spis treści">
         <a href="#geometria">1. Geometria</a>
@@ -517,26 +517,30 @@
 
           <!-- Pivot mark -->
           <circle cx="280" cy="280" r="5" fill="#1a1f1c"/>
-          <text x="290" y="298" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5a635c">biegun zabiegu</text>
+          <text x="290" y="298" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5a635c">biegun = RÓG ŚCIAN</text>
+          <text x="290" y="314" font-size="10" font-family="IBM Plex Mono, monospace" fill="#8a3b12">zabieg dochodzi do ściany</text>
+
+          <!-- Walls hatched at corner to stress winders into corner -->
+          <rect x="276" y="276" width="8" height="164" fill="#3d4a52" opacity="0.35"/>
+          <rect x="276" y="276" width="8" height="8" fill="#1a1f1c"/>
 
           <!-- Width dimension on short arm -->
           <line x1="60" y1="280" x2="60" y2="440" stroke="#5a635c" stroke-width="1"/>
           <text x="48" y="365" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5a635c" transform="rotate(-90 48 365)">~88 (3×28+zapas)</text>
 
-          <!-- Steel wall lines -->
-          <line x1="84" y1="84" x2="636" y2="84" stroke="#3d4a52" stroke-width="3" stroke-linecap="square"/>
-          <line x1="84" y1="276" x2="276" y2="276" stroke="#3d4a52" stroke-width="3"/>
-          <line x1="84" y1="84" x2="84" y2="436" stroke="#3d4a52" stroke-width="3"/>
-          <line x1="276" y1="276" x2="276" y2="436" stroke="#3d4a52" stroke-width="3"/>
-          <line x1="636" y1="84" x2="636" y2="276" stroke="#3d4a52" stroke-width="3"/>
+          <!-- Zig-zag stringer traces along outer edges -->
+          <path d="M88,430 L88,390 L100,390 L100,350 L88,350 L88,310 L100,310 L100,280" fill="none" stroke="#3d4a52" stroke-width="3"/>
+          <path d="M272,430 L272,390 L260,390 L260,350 L272,350 L272,310 L260,310 L260,280" fill="none" stroke="#3d4a52" stroke-width="3"/>
+          <path d="M280,272 L320,272 L320,260 L360,260 L360,248 L400,248 L400,236 L440,236 L440,224 L480,224 L480,212 L520,212 L520,200 L560,200 L560,188 L600,188 L600,176 L636,176" fill="none" stroke="#3d4a52" stroke-width="3"/>
+          <path d="M280,88 L320,88 L320,100 L360,100 L360,112 L400,112 L400,124 L440,124 L440,136 L480,136 L480,148 L520,148 L520,160 L560,160 L560,172 L600,172 L600,176" fill="none" stroke="#3d4a52" stroke-width="2.5"/>
 
-          <text x="100" y="470" font-family="IBM Plex Mono, monospace" font-size="12" fill="#3d4a52">══ ceownik / kątownik przy ścianie</text>
-          <text x="400" y="470" font-family="IBM Plex Mono, monospace" font-size="12" fill="#1f6b4a">- - linia biegu (R≈55 od bieguna)</text>
+          <text x="80" y="470" font-family="IBM Plex Mono, monospace" font-size="12" fill="#3d4a52">══ policzki piłokształtne (profil zamknięty)</text>
+          <text x="420" y="470" font-family="IBM Plex Mono, monospace" font-size="12" fill="#1f6b4a">- - linia biegu (R≈55 od rogu)</text>
         </svg>
         <div class="legend">
           <span><i class="wood"></i>stopnie proste</span>
-          <span><i class="winder"></i>zabiegi 4–6</span>
-          <span><i class="steel"></i>prowadnice stalowe przy ścianach</span>
+          <span><i class="winder"></i>zabiegi 4–6 → w róg ściany</span>
+          <span><i class="steel"></i>policzki zig‑zag + poprzeczki</span>
           <span><i class="walk"></i>linia chodu</span>
         </div>
       </div>
@@ -640,17 +644,17 @@
       <h2>4. Geometria zabiegów (stopnie 4–6)</h2>
       <div class="grid-2">
         <div class="panel">
-          <h3>Założenia</h3>
+          <h3>Założenia — zabieg w róg do ściany</h3>
           <ul class="clean">
             <li>Zakres skrętu: <strong>90°</strong> → 3 stopnie × <strong>30°</strong></li>
             <li>Szerokość biegu (ściana–ściana): <strong>110 cm</strong></li>
-            <li>Biegun (punkt zbiegnięcia nosków): przy wewnętrznym narożniku klatki</li>
-            <li>Linia biegu: <strong>R = 55 cm</strong> od bieguna → głębokość na linii chodu ≈ <strong>28,8 cm</strong> (jak bieg prosty)</li>
-            <li>Minimum przy biegunie: pozostawić klin / podcięcie nie węższe niż <strong>10 cm</strong> na nosku (albo trzpień / słupek)</li>
-            <li>Na zewnętrzu (R = 110): głębokość ≈ <strong>57–58 cm</strong></li>
+            <li><strong>Biegun = wewnętrzny róg dwóch ścian</strong> — noski zabiegów zbiegają się w narożnik; kliny dochodzą do ściany (nie ma „wolnego” spocznika w rogu)</li>
+            <li>Linia biegu: <strong>R = 55 cm</strong> od bieguna → głębokość na linii chodu ≈ <strong>28,8 cm</strong></li>
+            <li>Przy samym rogu: spawany <strong>słupek narożny</strong> (jak na zdjęciu) — stopnie nie muszą mieć 0 cm, ale metal idzie w róg</li>
+            <li>Na zewnętrzu (R = 110): głębokość ≈ <strong>57–58 cm</strong> — tu idzie zewnętrzny policzek zig‑zag</li>
           </ul>
-          <div class="callout">
-            Zabiegi rysować od bieguna: trzy promienie co 30°. Noski = te promienie. Podstopnice = powierzchnie pionowe między noskami.
+          <div class="callout warn">
+            <strong>Krytyczne:</strong> biegun zabiegu ustaw w styku ścian. Poprzeczki zabiegowe (promienie) idą od słupka narożnego / rogu do zewnętrznego policzka — dokładnie jak na referencyjnym zdjęciu.
           </div>
         </div>
         <div class="panel">
@@ -717,122 +721,188 @@
     </section>
 
     <section id="konstrukcja">
-      <h2>5. Konstrukcja stalowa — schemat do spawania / montażu</h2>
+      <h2>5. Konstrukcja stalowa — policzki piłokształtne (jak na zdjęciu)</h2>
       <p class="section-lead">
-        Schody oparte na ramie ze stali przymocowanej do ścian klatki. Drewno (stopnice + podstopnice) jest wypełnieniem — nie nośnikiem głównym.
-        Poniżej kolejność pod ślusarza (spawanie + kotwienie).
+        Rama spawana z <strong>profilu zamkniętego prostokątnego</strong> (np. 80×40×3 lub 100×50×3).
+        Dwa boczne policzki w kształcie <strong>zig‑zag / piły</strong> powtarzają obrys stopni (podstopnica + stopnica).
+        Między nimi — poprzeczki pod każdą deskę + blaszkowe uchwyty z otworami. Zabieg: poprzeczki promieniowo <strong>w róg ściany</strong>.
       </p>
+
+      <div class="callout">
+        <strong>Wysokość stopnia z deską = 17,5 cm:</strong>
+        powierzchnia stali pod stopnicą + grubość deski (40 mm) musi dać równe podniesienie.
+        Czyli górna półka zig‑zaga pod deską leży na rzędnej <span class="mono">(nr × 17,5) − 4,0 cm</span>.
+      </div>
 
       <div class="grid-2">
         <div class="panel">
-          <h3>Elementy nośne</h3>
+          <h3>Elementy ramy (kolejność spawania)</h3>
           <ol class="steps">
-            <li><strong>Prowadnice ścienne</strong> — ceownik C100 lub C120 (ew. 2× kątownik 80×80×8 jako „ceownik złożony”) wzdłuż obu ścian biegu, na całej długości dolnego i górnego ramienia oraz w strefie zabiegu.</li>
-            <li><strong>Żebra stopni</strong> — kątownik 50×50×5 / 60×60×6 lub płaskownik 8×60 przyspawany / skręcony do prowadnic; rozstaw = głębokość stopnia (28 cm w prostych).</li>
-            <li><strong>Zabieg</strong> — żebra promieniowe od bieguna do prowadnicy zewnętrznej (3 sektory). Biegun: słupek ∅48–60 mm lub kątownik 60×60 kotwiony do posadzki / ściany narożnej.</li>
-            <li><strong>Belka startowa</strong> — ceownik / kątownik przy posadzce parteru, zakotwiony w posadzce lub ścianach.</li>
-            <li><strong>Belka końcowa</strong> — oparcie o wieniec / krawędź stropu w otworze 330×110 (kątownik 80×80 lub ceownik do czoła stropu).</li>
-            <li><strong>Stężenia</strong> — skosy z kątownika 40×40 w strefie zabiegu i pod biegiem górnym, żeby rama nie „pływała” przy skręcaniu.</li>
+            <li><strong>Policzki piłokształtne (2 szt. na bieg prosty)</strong> — odcinki profilu cięte na ucios: pion = podstopnica (~13,5 cm stali przy desce 40 mm), poziom = głębokość 28 cm. Spawane w ciągły zig‑zag.</li>
+            <li><strong>Poprzeczki stopni</strong> — ten sam profil lub 60×40 / 50×30, długość ≈ 100–104 cm (w świetle między policzkami przy biegu 110 cm). Jedna na każdy stopień.</li>
+            <li><strong>Blaszki montażowe</strong> — płaskownik 5–6 mm z otworami Ø6–8, przyspawane na poprzeczce (2–3 szt./stopień) — wkręty od spodu w deskę.</li>
+            <li><strong>Zabieg w róg</strong> — słupek narożny (profil 80×80 lub 60×60) <em>w styku ścian</em>; od niego 4 promienie (noski) + 3 ramki stopni zabiegowych; zewnętrzny policzek zig‑zag skręca o 90° po obwodzie.</li>
+            <li><strong>Słupki podporowe</strong> — pionowe profile do posadzki w połowie biegu (jak na zdjęciu), szczególnie pod biegiem górnym.</li>
+            <li><strong>Mocowanie</strong> — góra: do czoła stropu / wieńca; róg i ściany: stopki + kotwy; opcjonalnie uchwyty kątownikowe do ściany przy policzku zewnętrznym.</li>
           </ol>
         </div>
         <div class="panel">
-          <svg class="drawing" viewBox="0 0 420 360" aria-label="Schemat ramy stalowej">
-            <!-- walls -->
-            <rect x="50" y="40" width="300" height="140" fill="rgba(61,74,82,0.06)" stroke="#1a1f1c" stroke-width="2"/>
-            <rect x="50" y="180" width="120" height="120" fill="rgba(61,74,82,0.06)" stroke="#1a1f1c" stroke-width="2"/>
-            <!-- wall channels -->
-            <path d="M55,45 H345 V175 H165 V295 H55 Z" fill="none" stroke="#3d4a52" stroke-width="6"/>
-            <!-- ribs straight upper -->
+          <svg class="drawing" viewBox="0 0 440 380" aria-label="Schemat ramy piłokształtnej z zabiegiem">
+            <!-- floor -->
+            <rect x="30" y="300" width="380" height="14" fill="#8a908a"/>
+            <!-- upper slab hint -->
+            <rect x="250" y="40" width="160" height="16" fill="#b7beb8"/>
+
+            <!-- outer zig-zag stringer (side view-ish) -->
+            <path d="M50,300 L50,282 L78,282 L78,264.5 L106,264.5 L106,247 L134,247 L134,229.5
+                     L162,229.5 L162,212 L190,212 L190,194.5 L218,194.5 L218,177
+                     L246,177 L246,159.5 L274,159.5 L274,142 L302,142 L302,124.5
+                     L330,124.5 L330,107 L358,107 L358,89.5 L386,89.5 L386,56"
+                  fill="none" stroke="#1a1f1c" stroke-width="5" stroke-linejoin="miter"/>
+
+            <!-- inner stringer offset -->
+            <path d="M68,300 L68,286 L90,286 L90,270 L118,270 L118,253.5 L146,253.5 L146,236
+                     L174,236 L174,218.5 L202,218.5 L202,201 L230,201 L230,183.5
+                     L258,183.5 L258,166 L286,166 L286,148.5 L314,148.5 L314,131
+                     L342,131 L342,113.5 L370,113.5 L370,70"
+                  fill="none" stroke="#3d4a52" stroke-width="3.5" stroke-linejoin="miter"/>
+
+            <!-- cross bars + tabs on a few steps -->
             <g stroke="#3d4a52" stroke-width="2">
-              <line x1="175" y1="50" x2="175" y2="170"/>
-              <line x1="205" y1="50" x2="205" y2="170"/>
-              <line x1="235" y1="50" x2="235" y2="170"/>
-              <line x1="265" y1="50" x2="265" y2="170"/>
-              <line x1="295" y1="50" x2="295" y2="170"/>
-              <line x1="325" y1="50" x2="325" y2="170"/>
+              <line x1="50" y1="282" x2="68" y2="286"/>
+              <line x1="106" y1="247" x2="118" y2="253.5"/>
+              <line x1="162" y1="212" x2="174" y2="218.5"/>
+              <line x1="218" y1="177" x2="230" y2="183.5"/>
+              <line x1="274" y1="142" x2="286" y2="148.5"/>
+              <line x1="330" y1="107" x2="342" y2="113.5"/>
             </g>
-            <!-- winder rays -->
-            <g stroke="#c47a3a" stroke-width="2.5">
-              <line x1="170" y1="180" x2="55" y2="180"/>
-              <line x1="170" y1="180" x2="70" y2="100"/>
-              <line x1="170" y1="180" x2="120" y2="55"/>
-              <line x1="170" y1="180" x2="170" y2="55"/>
+            <g fill="#5a635c">
+              <rect x="112" y="244" width="10" height="6"/><rect x="118" y="250" width="10" height="6"/>
+              <rect x="224" y="174" width="10" height="6"/><rect x="230" y="180" width="10" height="6"/>
+              <rect x="336" y="104" width="10" height="6"/><rect x="342" y="110" width="10" height="6"/>
             </g>
-            <circle cx="170" cy="180" r="7" fill="#1a1f1c"/>
-            <!-- lower ribs -->
-            <g stroke="#3d4a52" stroke-width="2">
-              <line x1="55" y1="210" x2="165" y2="210"/>
-              <line x1="55" y1="240" x2="165" y2="240"/>
-              <line x1="55" y1="270" x2="165" y2="270"/>
+
+            <!-- vertical post -->
+            <rect x="200" y="201" width="10" height="99" fill="#1a1f1c"/>
+            <rect x="190" y="300" width="30" height="8" fill="#3d4a52"/>
+
+            <!-- winder corner inset (plan hint) -->
+            <g transform="translate(40,40)">
+              <rect x="0" y="0" width="110" height="90" fill="#faf7f0" stroke="#1a1f1c" stroke-width="1.5"/>
+              <text x="8" y="16" font-family="IBM Plex Mono, monospace" font-size="10" fill="#5a635c">zabieg → róg</text>
+              <circle cx="100" cy="80" r="4" fill="#1a1f1c"/>
+              <line x1="100" y1="80" x2="10" y2="80" stroke="#c47a3a" stroke-width="2"/>
+              <line x1="100" y1="80" x2="20" y2="40" stroke="#c47a3a" stroke-width="2"/>
+              <line x1="100" y1="80" x2="55" y2="12" stroke="#c47a3a" stroke-width="2"/>
+              <line x1="100" y1="80" x2="100" y2="10" stroke="#c47a3a" stroke-width="2"/>
+              <path d="M10,10 H100 V80 H10 Z" fill="none" stroke="#3d4a52" stroke-width="2.5"/>
+              <text x="70" y="78" font-size="9" font-family="IBM Plex Mono, monospace" fill="#8a3b12">ściana</text>
             </g>
-            <!-- anchors -->
-            <g fill="#1f6b4a">
-              <circle cx="55" cy="70" r="4"/><circle cx="55" cy="120" r="4"/>
-              <circle cx="55" cy="200" r="4"/><circle cx="55" cy="250" r="4"/>
-              <circle cx="100" cy="295" r="4"/><circle cx="140" cy="295" r="4"/>
-              <circle cx="200" cy="45" r="4"/><circle cx="260" cy="45" r="4"/><circle cx="320" cy="45" r="4"/>
-              <circle cx="345" cy="90" r="4"/><circle cx="345" cy="140" r="4"/>
-            </g>
-            <text x="50" y="330" font-family="IBM Plex Mono, monospace" font-size="11" fill="#3d4a52">grube: prowadnice ścienne</text>
-            <text x="50" y="348" font-family="IBM Plex Mono, monospace" font-size="11" fill="#c47a3a">pomarańcz: żebra zabiegu</text>
-            <text x="230" y="348" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1f6b4a">● kotwy chemiczne</text>
+
+            <text x="40" y="340" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1a1f1c">policzek zig‑zag (profil zamknięty)</text>
+            <text x="40" y="358" font-family="IBM Plex Mono, monospace" font-size="11" fill="#3d4a52">poprzeczki + blaszki pod wkręty</text>
+            <text x="280" y="358" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1a1f1c">słupek do posadzki</text>
           </svg>
         </div>
       </div>
 
       <div class="panel" style="margin-top:1rem">
-        <h3>Przekrój typowego stopnia prostego (ściana–ściana)</h3>
-        <svg class="drawing" viewBox="0 0 720 260" aria-label="Przekrój stopnia">
-          <!-- walls -->
-          <rect x="40" y="30" width="28" height="200" fill="#b7beb8"/>
-          <rect x="652" y="30" width="28" height="200" fill="#b7beb8"/>
+        <h3>Przekrój stopnia prostego (między dwoma policzkami)</h3>
+        <svg class="drawing" viewBox="0 0 720 280" aria-label="Przekrój stopnia na ramie zig-zag">
+          <rect x="40" y="30" width="28" height="220" fill="#b7beb8"/>
+          <rect x="652" y="30" width="28" height="220" fill="#b7beb8"/>
           <text x="54" y="20" text-anchor="middle" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5a635c">ściana</text>
           <text x="666" y="20" text-anchor="middle" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5a635c">ściana</text>
 
-          <!-- channels -->
-          <path d="M70,60 v120 h16 v-20 h-8 v-80 h8 v-20 z" fill="#3d4a52"/>
-          <path d="M650,60 v20 h-8 v80 h8 v20 h-16 v-120 z" fill="#3d4a52"/>
+          <!-- zig-zag cheek sections (cut through horizontal shelf) -->
+          <rect x="78" y="100" width="40" height="24" fill="#1a1f1c"/>
+          <rect x="78" y="124" width="16" height="70" fill="#1a1f1c"/>
+          <rect x="602" y="100" width="40" height="24" fill="#1a1f1c"/>
+          <rect x="626" y="124" width="16" height="70" fill="#1a1f1c"/>
 
-          <!-- cross angle -->
-          <rect x="86" y="110" width="548" height="10" fill="#3d4a52"/>
-          <rect x="86" y="120" width="10" height="40" fill="#3d4a52"/>
-          <rect x="624" y="120" width="10" height="40" fill="#3d4a52"/>
+          <!-- cross member -->
+          <rect x="118" y="108" width="484" height="14" fill="#3d4a52"/>
+          <!-- mounting tabs -->
+          <rect x="200" y="98" width="28" height="10" fill="#5a635c"/>
+          <rect x="346" y="98" width="28" height="10" fill="#5a635c"/>
+          <rect x="492" y="98" width="28" height="10" fill="#5a635c"/>
+          <circle cx="214" cy="103" r="2.5" fill="#faf7f0"/>
+          <circle cx="360" cy="103" r="2.5" fill="#faf7f0"/>
+          <circle cx="506" cy="103" r="2.5" fill="#faf7f0"/>
 
-          <!-- tread board -->
-          <rect x="78" y="88" width="564" height="22" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1.5"/>
-          <!-- riser board -->
-          <rect x="78" y="110" width="14" height="70" fill="#e0a36a" stroke="#8f4f1f" stroke-width="1.2"/>
+          <!-- wood tread + riser -->
+          <rect x="74" y="76" width="572" height="22" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1.5"/>
+          <rect x="74" y="98" width="12" height="90" fill="#e0a36a" stroke="#8f4f1f" stroke-width="1.2"/>
 
-          <!-- dims -->
-          <line x1="78" y1="220" x2="642" y2="220" stroke="#1a1f1c" stroke-width="1"/>
-          <text x="360" y="240" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#1a1f1c">110 cm (w świetle ścian — cały bieg)</text>
-          <text x="360" y="78" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8f4f1f">stopnica deska 40 mm</text>
-          <text x="120" y="155" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8f4f1f">podstopnica</text>
-          <text x="200" y="145" font-family="IBM Plex Mono, monospace" font-size="12" fill="#3d4a52">kątownik / żebro</text>
-          <text x="90" y="50" font-family="IBM Plex Mono, monospace" font-size="11" fill="#3d4a52">C100/C120</text>
+          <line x1="78" y1="240" x2="642" y2="240" stroke="#1a1f1c" stroke-width="1"/>
+          <text x="360" y="258" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#1a1f1c">110 cm — rama wypełnia klatkę (ściana–ściana)</text>
+          <text x="360" y="64" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8f4f1f">stopnica 40 mm (wkręty od spodu w blaszki)</text>
+          <text x="140" y="160" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8f4f1f">podstopnica</text>
+          <text x="150" y="145" font-family="IBM Plex Mono, monospace" font-size="12" fill="#3d4a52">poprzeczka</text>
+          <text x="78" y="90" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1a1f1c">zig‑zag</text>
+          <text x="600" y="90" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1a1f1c">zig‑zag</text>
         </svg>
         <ul class="clean">
-          <li>Stopnica: deska <strong>40 mm</strong> (jak na rysunku referencyjnym), szer. biegu 110 cm (− luz montażowy 2×3–5 mm).</li>
-          <li>Podstopnica: deska <strong>18–22 mm</strong> (lub 28 mm), wysokość robocza ≈ 17,5 cm minus ewentualne wpustowanie w stopnicę.</li>
-          <li>Mocowanie drewna do stali: wkręty do metalu / otwory podłużne + taśma EPDM / podkładki dystansowe (cisza, dylatacja).</li>
-          <li>Kotwy prowadnic: <strong>chemiczne M10–M12</strong> co 40–50 cm, min. 8 cm w beton / odpowiednio w mur.</li>
+          <li>Profil policzków: <strong>80×40×3</strong> (min.) lub <strong>100×50×3</strong> — jak na zdjęciu referencyjnym.</li>
+          <li>Stopnica: deska <strong>40 mm</strong>; podstopnica z deski zamyka czoło (pełny stopień).</li>
+          <li>Wkręty do drewna od spodu przez blaszki; między stal a drewno: taśma EPDM / podkładki (cisza).</li>
+          <li>Przy ścianie: luz 5–10 mm na stronę albo oparcie policzka o uchwyty ścienne.</li>
         </ul>
+      </div>
+
+      <div class="panel" style="margin-top:1rem">
+        <h3>Detal zabiegu — spawanie w róg</h3>
+        <div class="grid-2">
+          <div>
+            <ol class="steps">
+              <li>Ustaw <strong>słupek narożny</strong> dokładnie w styku dwóch ścian (kotwa w posadzce + ewentualnie do ścian).</li>
+              <li>Od słupka wytycz <strong>4 promienie nosków</strong> co 30° (0° / 30° / 60° / 90°) — to górne krawędzie poprzeczek zabiegu.</li>
+              <li>Spawaj ramki stopni 4–6: każdy klin ma zewnętrzny odcinek zig‑zag (przy ścianie zewnętrznej) i poprzeczkę do słupka.</li>
+              <li>Wewnętrzne końce poprzeczek dochodzą do słupka / rogu — <strong>nie zostawiaj pustego podestu w narożniku</strong>.</li>
+              <li>Po spawaniu sprawdź laserem równość rzędnych: 70 / 87,5 / 105 cm (powierzchnia deski).</li>
+            </ol>
+          </div>
+          <svg class="drawing" viewBox="0 0 340 260" aria-label="Detal zabiegu w róg">
+            <!-- two walls meeting -->
+            <rect x="240" y="40" width="50" height="180" fill="#c5cdc6"/>
+            <rect x="40" y="190" width="250" height="50" fill="#c5cdc6"/>
+            <text x="265" y="130" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5a635c" transform="rotate(90 265 130)">ściana</text>
+            <text x="140" y="220" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5a635c">ściana</text>
+            <!-- corner post -->
+            <rect x="228" y="178" width="18" height="18" fill="#1a1f1c"/>
+            <!-- winder frames -->
+            <path d="M60,190 L246,190 L246,160 Z" fill="#e8b07a" stroke="#1a1f1c" stroke-width="1.5" opacity="0.9"/>
+            <path d="M60,190 L246,160 L200,60 L60,60 Z" fill="#e0a36a" stroke="#1a1f1c" stroke-width="1.5" opacity="0.85"/>
+            <path d="M246,190 L246,160 L200,60 L246,60 Z" fill="#d99858" stroke="#1a1f1c" stroke-width="1.5" opacity="0.9"/>
+            <!-- steel rays -->
+            <line x1="237" y1="187" x2="60" y2="187" stroke="#1a1f1c" stroke-width="3"/>
+            <line x1="237" y1="187" x2="70" y2="100" stroke="#1a1f1c" stroke-width="3"/>
+            <line x1="237" y1="187" x2="160" y2="55" stroke="#1a1f1c" stroke-width="3"/>
+            <line x1="237" y1="187" x2="237" y2="55" stroke="#1a1f1c" stroke-width="3"/>
+            <!-- outer zig zag hint -->
+            <path d="M55,195 L55,55 L250,55" fill="none" stroke="#3d4a52" stroke-width="4"/>
+            <text x="100" y="175" font-size="14" font-weight="700">4</text>
+            <text x="120" y="120" font-size="14" font-weight="700">5</text>
+            <text x="200" y="100" font-size="14" font-weight="700">6</text>
+            <text x="40" y="250" font-family="IBM Plex Mono, monospace" font-size="11" fill="#8a3b12">promienie stali → róg (bez podestu)</text>
+          </svg>
+        </div>
       </div>
     </section>
 
     <section id="montaz">
-      <h2>6. Kolejność spawania i montażu konstrukcji</h2>
+      <h2>6. Kolejność spawania i montażu (rama zig‑zag)</h2>
       <div class="panel">
         <ol class="steps">
-          <li><strong>Odbiór wymiarów natury</strong> — pomierzyć faktyczne 330×110 otworu, pion ścian, wysokość 280 cm (posadzka–posadzka), grubość stropu. Przenieść na rysunek wykonawczy 1:10 / 1:20.</li>
-          <li><strong>Wytyczyć biegun zabiegu i linię biegu</strong> na posadzce (R = 55 cm). Zaznaczyć noski wszystkich 16 podniesień.</li>
-          <li><strong>Zamontować prowadnice ścienne</strong> (ceowniki/kątowniki) — najpierw bieg dolny, potem zabieg, potem bieg górny; wypoziomować laserem, zachować spadki zgodne z h = 17,5.</li>
-          <li><strong>Wstawić słupek bieguna</strong> i przyspawać / skręcić żebra promieniowe zabiegu (stopnie 4–6).</li>
-          <li><strong>Dołożyć żebra stopni prostych</strong> co 28 cm w osiach nosków; stężyć skosami.</li>
-          <li><strong>Oprzeć koniec górny o strop</strong> — belka czołowa w otworze; sprawdzić przejście (prześwit) nad zabiegiem i dolnymi stopniami (≥ 200 cm w świetle po wykończeniu).</li>
-          <li><strong>Antykorozyjne</strong> — oczyścić spawy, pomalować konstrukcję (podkład + farba) przed montażem drewna.</li>
-          <li><strong>Montaż podstopnic, potem stopnic</strong> — pełne zamknięcie czoła; klej + wkręty; noski w jednej linii na zabiegu.</li>
-          <li><strong>Balustrada</strong> (osobno): słupki do stali lub ściany; wysokość ≥ 90 cm; przy zabiegu prowadzić poręcz po łuku / segmentach.</li>
+          <li><strong>Obmiar natury</strong> — otwór 330×110, H = 280, ką ścian, kąt narożnika (czy na pewno 90°).</li>
+          <li><strong>Szablon 1:1 na posadzce</strong> — noski wszystkich stopni; biegun zabiegu w styku ścian; linia biegu R = 55 cm.</li>
+          <li><strong>Pociąć policzki</strong> — lista cięć: na każdy stopień prosty odcinek poziomy 28 cm + pion ≈ 13,5 cm (stal pod deską 40 mm przy h = 17,5). Uciosy 45° / wg kąta.</li>
+          <li><strong>Zespawać oba policzki biegu dolnego</strong>, wstawić poprzeczki + blaszki; ustawić w klatce, wypoziomować.</li>
+          <li><strong>Zabieg:</strong> słupek w róg → promienie → zewnętrzny zig‑zag skrętu → sprawdzenie, że kliny dochodzą do ściany.</li>
+          <li><strong>Bieg górny</strong> — kolejne segmenty zig‑zag do stropu; słupki podporowe do posadzki; kotwienie góry w otworze stropu.</li>
+          <li><strong>Malowanie</strong> antykorozyjne (jak czarna rama na zdjęciu) przed montażem drewna.</li>
+          <li><strong>Podstopnice, potem stopnice</strong> — wkręty od spodu w blaszki; na zabiegu szablony klinów z natury.</li>
+          <li><strong>Balustrada</strong> — słupki przyspawane do policzka / poprzeczek; przy zabiegu prowadzić po łuku.</li>
         </ol>
       </div>
     </section>
@@ -841,17 +911,17 @@
       <h2>7. Zestawienie materiałów (orientacyjne)</h2>
       <div class="grid-2">
         <div class="panel">
-          <h3>Stal</h3>
+          <h3>Stal — rama piłokształtna</h3>
           <table>
             <thead><tr><th>Element</th><th>Profil</th><th class="num">Ilość (orient.)</th></tr></thead>
             <tbody>
-              <tr><td>Prowadnice ścienne</td><td>C100 / C120 lub 2× L80×80×8</td><td class="num">~12–14 m</td></tr>
-              <tr><td>Żebra stopni prostych</td><td>L50×50×5 / L60×60×6</td><td class="num">12 szt. × 110 cm</td></tr>
-              <tr><td>Żebra zabiegu</td><td>L50×50×5</td><td class="num">4 promienie (+ ewentualne pośrednie)</td></tr>
-              <tr><td>Słupek bieguna</td><td>rura ∅48–60 / L60×60</td><td class="num">1 szt. ~110 cm</td></tr>
-              <tr><td>Belka start + czoło stropu</td><td>C100 / L80×80</td><td class="num">2 szt.</td></tr>
-              <tr><td>Stężenia</td><td>L40×40×4</td><td class="num">~6–8 m</td></tr>
-              <tr><td>Kotwy chemiczne</td><td>M10–M12</td><td class="num">~30–40 szt.</td></tr>
+              <tr><td>Policzki zig‑zag + poprzeczki</td><td>profil zamk. <strong>80×40×3</strong> (lub 100×50×3)</td><td class="num">~35–45 m</td></tr>
+              <tr><td>Słupek narożny zabiegu</td><td>80×80×3 / 60×60×3</td><td class="num">1 szt. (wys. do ~105 cm+)</td></tr>
+              <tr><td>Słupki podporowe do posadzki</td><td>80×40 / 60×60</td><td class="num">2–4 szt.</td></tr>
+              <tr><td>Blaszki montażowe pod stopnice</td><td>płaskownik 5–6 mm</td><td class="num">~40–50 szt.</td></tr>
+              <tr><td>Stopki / płyty kotwiące</td><td>blacha 8–10 mm</td><td class="num">4–8 szt.</td></tr>
+              <tr><td>Kotwy chemiczne</td><td>M10–M12</td><td class="num">~20–30 szt.</td></tr>
+              <tr><td>Uchwyty do ściany (opcjonalnie)</td><td>kątownik 50×50</td><td class="num">co 50–60 cm przy policzku</td></tr>
             </tbody>
           </table>
         </div>
@@ -861,15 +931,14 @@
             <thead><tr><th>Element</th><th>Wymiar</th><th class="num">Ilość</th></tr></thead>
             <tbody>
               <tr><td>Stopnice proste</td><td>110 × 28 × 4 cm</td><td class="num">12 szt. (1–3, 7–15)</td></tr>
-              <tr><td>Stopnice zabiegowe</td><td>klin z płyty/deski 40 mm wg szablonu 30°</td><td class="num">3 szt.</td></tr>
-              <tr><td>Stopnica dojścia / nakładka</td><td>wg krawędzi stropu</td><td class="num">1 szt.</td></tr>
-              <tr><td>Podstopnice proste</td><td>110 × ~17,5 × 1,8–2,8 cm</td><td class="num">13 szt.</td></tr>
-              <tr><td>Podstopnice zabiegowe</td><td>trapezy / sektory</td><td class="num">3 szt.</td></tr>
+              <tr><td>Stopnice zabiegowe</td><td>klin 40 mm — szablon z natury (do rogu)</td><td class="num">3 szt.</td></tr>
+              <tr><td>Stopnica dojścia</td><td>wg krawędzi stropu</td><td class="num">1 szt.</td></tr>
+              <tr><td>Podstopnice proste</td><td>110 × ~13–17 × 1,8–2,8 cm</td><td class="num">13 szt.</td></tr>
+              <tr><td>Podstopnice zabiegowe</td><td>sektory do ściany</td><td class="num">3 szt.</td></tr>
             </tbody>
           </table>
           <p style="margin:0.8rem 0 0;color:var(--muted);font-size:0.9rem">
-            Gatunek: dąb / jesion / modrzew (stopnice), podstopnice mogą być z tego samego drewna lub sklejki liściastej oklejonej.
-            Przed rozkrojem zabiegów zrobić <strong>szablony z płyty 4–6 mm</strong> po obmiarze natury.
+            Zabiegi rozkroić dopiero po spawaniu ramy — szablon z kartonu na gotowych poprzeczkach w narożniku.
           </p>
         </div>
       </div>
@@ -879,15 +948,14 @@
       <h2>8. Co powiedzieć projektantowi (podest vs zabieg)</h2>
       <div class="panel">
         <ul class="clean">
-          <li><strong>Podest ~96 cm</strong> w Waszym rysunku to prawie metr płaskiej półki, która <em>nie skraca</em> drogi w pionie — tylko zajmuje plan.</li>
-          <li><strong>Trzy zabiegi</strong> w tym samym narożniku dają <strong>+52,5 cm wysokości</strong> (3 × 17,5) przy porównywalnym zajęciu narożnika — to jest właśnie oszczędność miejsca przy niskiej kondygnacji / ciasnej klatce.</li>
-          <li>Otwór stropu <strong>330×110</strong> zostaje; zmieniamy tylko geometrię biegu pod spodem i w narożniku.</li>
-          <li>Konstrukcja stalowa przy ścianach jest typowa dla pełnych stopni z podstopnicami i nie wymaga drewnianych policzków „na wylot” jak na wizualizacji z podestem.</li>
-          <li>Przy h ≈ 17,5–18,7 cm oba warianty mieszczą się w praktyce; spór o podest nie wynika z niemożliwości zabiegu, tylko z przyzwyczajenia do spocznika.</li>
+          <li><strong>Podest ~96 cm</strong> to prawie metr płaskiej półki, która nie skraca drogi w pionie.</li>
+          <li><strong>Trzy zabiegi w róg ściany</strong> dają <strong>+52,5 cm wysokości</strong> w tym samym narożniku — i taką ramę da się zrobić w stylu piłokształtnym ze zdjęcia.</li>
+          <li>Otwór <strong>330×110</strong> zostaje; zmieniamy geometrię biegu (bez spocznika).</li>
+          <li>Konstrukcja = spawany profil zamknięty zig‑zag + poprzeczki + słupek w narożniku — nie drewniane policzki „na wylot”.</li>
         </ul>
         <div class="callout">
-          Ten dokument to <strong>schemat wykonawczy / wytyczne do sprawiania</strong>, nie zastępuje ostatecznego projektu budowlanego ani obliczeń statycznych przy nietypowych ścianach.
-          Przed spawaniem: obmiar natury + ewentualna konsultacja ze ślusarzem / konstruktorem pod kotwy i nośność ścian.
+          To <strong>schemat do spawania</strong> dla ślusarza, nie zastępuje obliczeń statycznych.
+          Przed spawaniem: obmiar natury + uzgodnienie profilu (80×40 vs 100×50) z wykonawcą.
         </div>
       </div>
     </section>
@@ -911,8 +979,8 @@
 
     <footer>
       <p>
-        Opracowanie na podstawie wymiarów z rysunku: H = 280 cm, otwór 330×110 cm, bez podestu, stopnie pełne,
-        konstrukcja stalowa przy ścianach. Plik: <span class="mono">schody-zabiegowe.html</span> — otwórz w przeglądarce i drukuj do PDF.
+        H = 280 cm, otwór 330×110 cm, bez podestu, zabieg w róg ściany, rama piłokształtna (profil zamknięty).
+        Plik: <span class="mono">schody-zabiegowe.html</span> — otwórz w przeglądarce i drukuj do PDF.
       </p>
     </footer>
   </div>
