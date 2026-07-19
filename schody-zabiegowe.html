@@ -521,19 +521,19 @@
           <line x1="30" y1="256" x2="30" y2="345.6" stroke="#5a635c" stroke-width="1"/>
           <text x="18" y="305" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5a635c" transform="rotate(-90 18 305)">56 = 2×28</text>
 
-          <!-- Policzki zig-zag (ślad) -->
-          <path d="M58,340 L58,312 L70,312 L70,280 L58,280 L58,256" fill="none" stroke="#3d4a52" stroke-width="3"/>
-          <path d="M218,340 L218,312 L206,312 L206,280 L218,280 L218,256" fill="none" stroke="#3d4a52" stroke-width="3"/>
-          <path d="M226,248 L270.8,248 L270.8,236 L315.6,236 L315.6,224 L360.4,224 L360.4,212 L405.2,212 L405.2,200 L450,200 L450,188 L494.8,188 L494.8,176 L539.6,176 L539.6,164 L584.4,164 L584.4,152 L629.2,152 L629.2,140 L674,140" fill="none" stroke="#3d4a52" stroke-width="2.5"/>
+          <!-- Ściany (grube) przy biegu -->
+          <line x1="50" y1="80" x2="754" y2="80" stroke="#3d4a52" stroke-width="4"/>
+          <line x1="50" y1="256" x2="226" y2="256" stroke="#3d4a52" stroke-width="4"/>
+          <line x1="50" y1="80" x2="50" y2="345.6" stroke="#3d4a52" stroke-width="4"/>
+          <line x1="226" y1="256" x2="226" y2="345.6" stroke="#3d4a52" stroke-width="4"/>
 
-          <text x="50" y="400" font-family="IBM Plex Mono, monospace" font-size="12" fill="#3d4a52">policzki zig‑zag</text>
-          <text x="50" y="420" font-family="IBM Plex Mono, monospace" font-size="12" fill="#1f6b4a">linia biegu · proste 1–2 i 6–15 = po 28 cm</text>
-          <text x="50" y="440" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8a3b12">10×28 cm = 280 cm biegu górnego + 50 cm dojścia w otworze 330</text>
+          <text x="50" y="400" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8a3b12">Każdy prosty stopień (1–2 i 6–15) = 28 cm głębokości · 10×28 = 280 cm + 50 cm dojścia = 330</text>
+          <text x="50" y="420" font-family="IBM Plex Mono, monospace" font-size="12" fill="#3d4a52">grube linie = ściany · profil zig‑zag pokazany w sekcji 5</text>
         </svg>
         <div class="legend">
           <span><i class="wood"></i>proste 28 cm (ta sama skala)</span>
           <span><i class="winder"></i>zabiegi 3–5 → w róg</span>
-          <span><i class="steel"></i>policzki zig‑zag</span>
+          <span><i class="steel"></i>ściany klatki</span>
           <span><i class="walk"></i>linia chodu</span>
         </div>
       </div>
@@ -950,23 +950,6 @@
           To <strong>schemat do spawania</strong> dla ślusarza, nie zastępuje obliczeń statycznych.
           Przed spawaniem: obmiar natury + uzgodnienie profilu (80×40 vs 100×50) z wykonawcą.
         </div>
-      </div>
-    </section>
-
-    <section id="wariant-b">
-      <h2>Dodatek — przeliczenie przy h = 18,67 cm (15 podniesień)</h2>
-      <p class="section-lead">Jeśli projektant absolutnie chce zostać przy liczbie z kalk.pro, zabiegi da się zrobić tak samo — tylko bez podestu:</p>
-      <div class="panel">
-        <table>
-          <thead><tr><th>Parametr</th><th class="num">Wartość</th></tr></thead>
-          <tbody>
-            <tr><td>Liczba podniesień</td><td class="num">15</td></tr>
-            <tr><td>h</td><td class="num">18,67 cm</td></tr>
-            <tr><td>s (Blondel ≈ 63)</td><td class="num">≈ 25,7 cm</td></tr>
-            <tr><td>Układ (jak w wariancie A)</td><td class="num">2 proste + 3 zabiegi + 9 prostych + dojście = 15</td></tr>
-            <tr><td>Wys. po zabiegu (stopień 5)</td><td class="num">≈ 93,3 cm</td></tr>
-          </tbody>
-        </table>
       </div>
     </section>
 
