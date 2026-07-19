@@ -404,22 +404,22 @@
           <tbody>
             <tr>
               <td>Bieg dolny (prosty)</td>
-              <td>1–3</td>
-              <td class="num">3</td>
-              <td class="num">52,5 cm</td>
-              <td>s = 28 cm, szer. 110 cm</td>
+              <td>1–2</td>
+              <td class="num">2</td>
+              <td class="num">35,0 cm</td>
+              <td>s = 28 cm, szer. 110 cm — tylko 2 na starcie</td>
             </tr>
             <tr class="winder">
               <td>Zabieg 90°</td>
-              <td>4–6</td>
+              <td>3–5</td>
               <td class="num">3</td>
-              <td class="num">105,0 cm</td>
-              <td>po 30°; linia biegu R = 55 cm</td>
+              <td class="num">87,5 cm</td>
+              <td>po 30°; linia biegu R = 55 cm; w róg ściany</td>
             </tr>
             <tr>
               <td>Bieg górny (prosty)</td>
-              <td>7–15</td>
-              <td class="num">9</td>
+              <td>6–15</td>
+              <td class="num">10</td>
               <td class="num">262,5 cm</td>
               <td>w osi otworu 330 cm</td>
             </tr>
@@ -464,52 +464,49 @@
           <!-- Short arm width 110cm = 200px, scale_s = 200/110 -->
           <!-- Long arm length 330cm = 560px, scale_l = 560/330 -->
 
-          <!-- Bieg dolny: stopnie 1–3 (do styku z zabiegiem na y=280) -->
+          <!-- Bieg dolny: tylko 2 stopnie proste (1–2), potem zabieg -->
           <g id="lower">
-            <rect x="80" y="386.7" width="200" height="53.3" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1.2"/>
-            <text x="180" y="418" text-anchor="middle" fill="#fff" font-size="14" font-family="IBM Plex Sans, sans-serif" font-weight="600">1</text>
-            <rect x="80" y="333.3" width="200" height="53.4" fill="#cc843f" stroke="#8f4f1f" stroke-width="1.2"/>
-            <text x="180" y="365" text-anchor="middle" fill="#fff" font-size="14" font-family="IBM Plex Sans, sans-serif" font-weight="600">2</text>
-            <rect x="80" y="280" width="200" height="53.3" fill="#d48d48" stroke="#8f4f1f" stroke-width="1.2"/>
-            <text x="180" y="312" text-anchor="middle" fill="#fff" font-size="14" font-family="IBM Plex Sans, sans-serif" font-weight="600">3</text>
+            <rect x="80" y="360" width="200" height="80" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1.2"/>
+            <text x="180" y="405" text-anchor="middle" fill="#fff" font-size="16" font-family="IBM Plex Sans, sans-serif" font-weight="600">1</text>
+            <rect x="80" y="280" width="200" height="80" fill="#cc843f" stroke="#8f4f1f" stroke-width="1.2"/>
+            <text x="180" y="325" text-anchor="middle" fill="#fff" font-size="16" font-family="IBM Plex Sans, sans-serif" font-weight="600">2</text>
           </g>
 
-          <!-- Zabiegi 4–6 od bieguna (280,280), sektory 30° (0° = w lewo, 90° = w górę) -->
+          <!-- Zabiegi 3–5 od bieguna (280,280), sektory 30° -->
           <g id="winders">
-            <!-- 4: 0–30° -->
             <path d="M280,280 L80,280 L80,164.5 Z" fill="#e8b07a" stroke="#8f4f1f" stroke-width="1.3"/>
-            <!-- 5: 30–60° (z narożnikiem zewnętrznym) -->
             <path d="M280,280 L80,164.5 L80,80 L164.5,80 Z" fill="#e0a36a" stroke="#8f4f1f" stroke-width="1.3"/>
-            <!-- 6: 60–90° -->
             <path d="M280,280 L164.5,80 L280,80 Z" fill="#d99858" stroke="#8f4f1f" stroke-width="1.3"/>
-            <text x="150" y="250" fill="#1a1f1c" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">4</text>
-            <text x="130" y="145" fill="#1a1f1c" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">5</text>
-            <text x="230" y="120" fill="#1a1f1c" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">6</text>
+            <text x="150" y="250" fill="#1a1f1c" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">3</text>
+            <text x="130" y="145" fill="#1a1f1c" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">4</text>
+            <text x="230" y="120" fill="#1a1f1c" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">5</text>
           </g>
 
-          <!-- Bieg górny: stopnie 7–15 + dojście 16 -->
+          <!-- Bieg górny: stopnie 6–15 + dojście 16 -->
           <g id="upper-treads">
-            <rect x="280" y="80" width="36" height="200" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="316" y="80" width="36" height="200" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="352" y="80" width="36" height="200" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="388" y="80" width="36" height="200" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="424" y="80" width="36" height="200" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="460" y="80" width="36" height="200" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="496" y="80" width="36" height="200" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="532" y="80" width="36" height="200" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="568" y="80" width="36" height="200" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
-            <rect x="604" y="80" width="36" height="200" fill="#1f6b4a" fill-opacity="0.35" stroke="#1f6b4a" stroke-width="1.5"/>
-            <text x="298" y="185" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">7</text>
-            <text x="334" y="185" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">8</text>
-            <text x="370" y="185" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">9</text>
-            <text x="402" y="185" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">10</text>
-            <text x="438" y="185" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">11</text>
-            <text x="474" y="185" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">12</text>
-            <text x="510" y="185" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">13</text>
-            <text x="546" y="185" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">14</text>
-            <text x="582" y="185" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">15</text>
-            <text x="612" y="175" fill="#1f6b4a" font-size="11" font-weight="700" font-family="IBM Plex Mono, monospace">16</text>
-            <text x="612" y="190" fill="#1f6b4a" font-size="9" font-family="IBM Plex Mono, monospace">piętro</text>
+            <rect x="280" y="80" width="32.7" height="200" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="312.7" y="80" width="32.7" height="200" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="345.4" y="80" width="32.7" height="200" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="378.1" y="80" width="32.7" height="200" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="410.8" y="80" width="32.7" height="200" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="443.5" y="80" width="32.7" height="200" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="476.2" y="80" width="32.7" height="200" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="508.9" y="80" width="32.7" height="200" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="541.6" y="80" width="32.7" height="200" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="574.3" y="80" width="32.7" height="200" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="607" y="80" width="33" height="200" fill="#1f6b4a" fill-opacity="0.35" stroke="#1f6b4a" stroke-width="1.5"/>
+            <text x="290" y="185" fill="#fff" font-size="11" font-weight="700" font-family="IBM Plex Sans, sans-serif">6</text>
+            <text x="323" y="185" fill="#fff" font-size="11" font-weight="700" font-family="IBM Plex Sans, sans-serif">7</text>
+            <text x="355" y="185" fill="#fff" font-size="11" font-weight="700" font-family="IBM Plex Sans, sans-serif">8</text>
+            <text x="388" y="185" fill="#fff" font-size="11" font-weight="700" font-family="IBM Plex Sans, sans-serif">9</text>
+            <text x="418" y="185" fill="#fff" font-size="11" font-weight="700" font-family="IBM Plex Sans, sans-serif">10</text>
+            <text x="451" y="185" fill="#fff" font-size="11" font-weight="700" font-family="IBM Plex Sans, sans-serif">11</text>
+            <text x="484" y="185" fill="#fff" font-size="11" font-weight="700" font-family="IBM Plex Sans, sans-serif">12</text>
+            <text x="516" y="185" fill="#fff" font-size="11" font-weight="700" font-family="IBM Plex Sans, sans-serif">13</text>
+            <text x="549" y="185" fill="#fff" font-size="11" font-weight="700" font-family="IBM Plex Sans, sans-serif">14</text>
+            <text x="582" y="185" fill="#fff" font-size="11" font-weight="700" font-family="IBM Plex Sans, sans-serif">15</text>
+            <text x="614" y="175" fill="#1f6b4a" font-size="11" font-weight="700" font-family="IBM Plex Mono, monospace">16</text>
+            <text x="614" y="190" fill="#1f6b4a" font-size="9" font-family="IBM Plex Mono, monospace">piętro</text>
           </g>
 
           <!-- Walking line -->
@@ -526,11 +523,11 @@
 
           <!-- Width dimension on short arm -->
           <line x1="60" y1="280" x2="60" y2="440" stroke="#5a635c" stroke-width="1"/>
-          <text x="48" y="365" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5a635c" transform="rotate(-90 48 365)">~88 (3×28+zapas)</text>
+          <text x="48" y="365" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5a635c" transform="rotate(-90 48 365)">~56 (2×28)</text>
 
-          <!-- Zig-zag stringer traces along outer edges -->
-          <path d="M88,430 L88,390 L100,390 L100,350 L88,350 L88,310 L100,310 L100,280" fill="none" stroke="#3d4a52" stroke-width="3"/>
-          <path d="M272,430 L272,390 L260,390 L260,350 L272,350 L272,310 L260,310 L260,280" fill="none" stroke="#3d4a52" stroke-width="3"/>
+          <!-- Zig-zag stringer traces — 2 stopnie dolne -->
+          <path d="M88,430 L88,390 L100,390 L100,350 L88,350 L88,280" fill="none" stroke="#3d4a52" stroke-width="3"/>
+          <path d="M272,430 L272,390 L260,390 L260,350 L272,350 L272,280" fill="none" stroke="#3d4a52" stroke-width="3"/>
           <path d="M280,272 L320,272 L320,260 L360,260 L360,248 L400,248 L400,236 L440,236 L440,224 L480,224 L480,212 L520,212 L520,200 L560,200 L560,188 L600,188 L600,176 L636,176" fill="none" stroke="#3d4a52" stroke-width="3"/>
           <path d="M280,88 L320,88 L320,100 L360,100 L360,112 L400,112 L400,124 L440,124 L440,136 L480,136 L480,148 L520,148 L520,160 L560,160 L560,172 L600,172 L600,176" fill="none" stroke="#3d4a52" stroke-width="2.5"/>
 
@@ -539,7 +536,7 @@
         </svg>
         <div class="legend">
           <span><i class="wood"></i>stopnie proste</span>
-          <span><i class="winder"></i>zabiegi 4–6 → w róg ściany</span>
+          <span><i class="winder"></i>zabiegi 3–5 → w róg ściany</span>
           <span><i class="steel"></i>policzki zig‑zag + poprzeczki</span>
           <span><i class="walk"></i>linia chodu</span>
         </div>
@@ -599,11 +596,11 @@
             <!-- generate visually important ones -->
             <rect x="60" y="322.5" width="46.8" height="17.5"/>
             <rect x="106.8" y="305" width="46.8" height="17.5"/>
-            <rect x="153.6" y="287.5" width="46.8" height="17.5"/>
-            <!-- winders zone highlight -->
+            <!-- zabiegi 3–5 -->
+            <rect x="153.6" y="287.5" width="46.8" height="17.5" fill="#e8b07a"/>
             <rect x="200.4" y="270" width="46.8" height="17.5" fill="#e8b07a"/>
             <rect x="247.2" y="252.5" width="46.8" height="17.5" fill="#e8b07a"/>
-            <rect x="294" y="235" width="46.8" height="17.5" fill="#e8b07a"/>
+            <rect x="294" y="235" width="46.8" height="17.5"/>
             <rect x="340.8" y="217.5" width="46.8" height="17.5"/>
             <rect x="387.6" y="200" width="46.8" height="17.5"/>
             <rect x="434.4" y="182.5" width="46.8" height="17.5"/>
@@ -627,7 +624,7 @@
 
           <!-- Winder bracket -->
           <line x1="200" y1="390" x2="341" y2="390" stroke="#c47a3a" stroke-width="2"/>
-          <text x="270" y="408" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8f4f1f">zabiegi 4–6 (bez podestu)</text>
+          <text x="270" y="408" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8f4f1f">zabiegi 3–5 (po 2 prostych)</text>
 
           <!-- Opening length -->
           <line x1="480" y1="30" x2="860" y2="30" stroke="#5a635c" stroke-width="1"/>
@@ -641,7 +638,7 @@
     </section>
 
     <section id="zabiegi">
-      <h2>4. Geometria zabiegów (stopnie 4–6)</h2>
+      <h2>4. Geometria zabiegów (stopnie 3–5)</h2>
       <div class="grid-2">
         <div class="panel">
           <h3>Założenia — zabieg w róg do ściany</h3>
@@ -676,9 +673,9 @@
             <!-- walking arc -->
             <path d="M205,260 A55,55 0 0 0 260,205" fill="none" stroke="#1f6b4a" stroke-width="2" stroke-dasharray="5 4"/>
             <circle cx="205" cy="260" r="3" fill="#1f6b4a"/>
-            <text x="70" y="245" font-size="14" font-weight="700">4</text>
-            <text x="130" y="175" font-size="14" font-weight="700">5</text>
-            <text x="210" y="120" font-size="14" font-weight="700">6</text>
+            <text x="70" y="245" font-size="14" font-weight="700">3</text>
+            <text x="130" y="175" font-size="14" font-weight="700">4</text>
+            <text x="210" y="120" font-size="14" font-weight="700">5</text>
             <text x="270" y="275" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5a635c">biegun</text>
             <text x="40" y="300" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1f6b4a">łuk linii biegu R=55</text>
             <text x="280" y="60" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5a635c">30°</text>
@@ -699,13 +696,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td>1</td><td>prosty</td><td class="num">17,5</td><td class="num">17,5</td><td>start od posadzki; kotwy w posadzce / belka startowa</td></tr>
-            <tr><td>2</td><td>prosty</td><td class="num">35,0</td><td class="num">17,5</td><td>s = 28</td></tr>
-            <tr><td>3</td><td>prosty</td><td class="num">52,5</td><td class="num">17,5</td><td>ostatni prosty przed zabiegiem</td></tr>
-            <tr class="winder"><td>4</td><td>zabiegowy</td><td class="num">70,0</td><td class="num">17,5</td><td>klin 0–30°</td></tr>
-            <tr class="winder"><td>5</td><td>zabiegowy</td><td class="num">87,5</td><td class="num">17,5</td><td>klin 30–60°</td></tr>
-            <tr class="winder"><td>6</td><td>zabiegowy</td><td class="num">105,0</td><td class="num">17,5</td><td>klin 60–90°</td></tr>
-            <tr><td>7</td><td>prosty</td><td class="num">122,5</td><td class="num">17,5</td><td>wejście w otwór stropu — kontrola przejścia</td></tr>
+            <tr><td>1</td><td>prosty</td><td class="num">17,5</td><td class="num">17,5</td><td>start od posadzki</td></tr>
+            <tr><td>2</td><td>prosty</td><td class="num">35,0</td><td class="num">17,5</td><td>ostatni prosty przed zabiegiem (tylko 2 na początku)</td></tr>
+            <tr class="winder"><td>3</td><td>zabiegowy</td><td class="num">52,5</td><td class="num">17,5</td><td>klin 0–30° → w róg</td></tr>
+            <tr class="winder"><td>4</td><td>zabiegowy</td><td class="num">70,0</td><td class="num">17,5</td><td>klin 30–60°</td></tr>
+            <tr class="winder"><td>5</td><td>zabiegowy</td><td class="num">87,5</td><td class="num">17,5</td><td>klin 60–90°</td></tr>
+            <tr><td>6</td><td>prosty</td><td class="num">105,0</td><td class="num">17,5</td><td>pierwszy po zabiegu</td></tr>
+            <tr><td>7</td><td>prosty</td><td class="num">122,5</td><td class="num">17,5</td><td>kontrola przejścia w otworze</td></tr>
             <tr><td>8</td><td>prosty</td><td class="num">140,0</td><td class="num">17,5</td><td></td></tr>
             <tr><td>9</td><td>prosty</td><td class="num">157,5</td><td class="num">17,5</td><td></td></tr>
             <tr><td>10</td><td>prosty</td><td class="num">175,0</td><td class="num">17,5</td><td></td></tr>
@@ -857,9 +854,9 @@
             <ol class="steps">
               <li>Ustaw <strong>słupek narożny</strong> dokładnie w styku dwóch ścian (kotwa w posadzce + ewentualnie do ścian).</li>
               <li>Od słupka wytycz <strong>4 promienie nosków</strong> co 30° (0° / 30° / 60° / 90°) — to górne krawędzie poprzeczek zabiegu.</li>
-              <li>Spawaj ramki stopni 4–6: każdy klin ma zewnętrzny odcinek zig‑zag (przy ścianie zewnętrznej) i poprzeczkę do słupka.</li>
+              <li>Spawaj ramki stopni <strong>3–5</strong>: każdy klin ma zewnętrzny odcinek zig‑zag i poprzeczkę do słupka.</li>
               <li>Wewnętrzne końce poprzeczek dochodzą do słupka / rogu — <strong>nie zostawiaj pustego podestu w narożniku</strong>.</li>
-              <li>Po spawaniu sprawdź laserem równość rzędnych: 70 / 87,5 / 105 cm (powierzchnia deski).</li>
+              <li>Po spawaniu sprawdź laserem rzędne desek zabiegu: <strong>52,5 / 70 / 87,5 cm</strong>.</li>
             </ol>
           </div>
           <svg class="drawing" viewBox="0 0 340 260" aria-label="Detal zabiegu w róg">
@@ -881,9 +878,9 @@
             <line x1="237" y1="187" x2="237" y2="55" stroke="#1a1f1c" stroke-width="3"/>
             <!-- outer zig zag hint -->
             <path d="M55,195 L55,55 L250,55" fill="none" stroke="#3d4a52" stroke-width="4"/>
-            <text x="100" y="175" font-size="14" font-weight="700">4</text>
-            <text x="120" y="120" font-size="14" font-weight="700">5</text>
-            <text x="200" y="100" font-size="14" font-weight="700">6</text>
+            <text x="100" y="175" font-size="14" font-weight="700">3</text>
+            <text x="120" y="120" font-size="14" font-weight="700">4</text>
+            <text x="200" y="100" font-size="14" font-weight="700">5</text>
             <text x="40" y="250" font-family="IBM Plex Mono, monospace" font-size="11" fill="#8a3b12">promienie stali → róg (bez podestu)</text>
           </svg>
         </div>
@@ -916,7 +913,7 @@
             <thead><tr><th>Element</th><th>Profil</th><th class="num">Ilość (orient.)</th></tr></thead>
             <tbody>
               <tr><td>Policzki zig‑zag + poprzeczki</td><td>profil zamk. <strong>80×40×3</strong> (lub 100×50×3)</td><td class="num">~35–45 m</td></tr>
-              <tr><td>Słupek narożny zabiegu</td><td>80×80×3 / 60×60×3</td><td class="num">1 szt. (wys. do ~105 cm+)</td></tr>
+              <tr><td>Słupek narożny zabiegu</td><td>80×80×3 / 60×60×3</td><td class="num">1 szt. (wys. do ~90 cm+)</td></tr>
               <tr><td>Słupki podporowe do posadzki</td><td>80×40 / 60×60</td><td class="num">2–4 szt.</td></tr>
               <tr><td>Blaszki montażowe pod stopnice</td><td>płaskownik 5–6 mm</td><td class="num">~40–50 szt.</td></tr>
               <tr><td>Stopki / płyty kotwiące</td><td>blacha 8–10 mm</td><td class="num">4–8 szt.</td></tr>
@@ -930,7 +927,7 @@
           <table>
             <thead><tr><th>Element</th><th>Wymiar</th><th class="num">Ilość</th></tr></thead>
             <tbody>
-              <tr><td>Stopnice proste</td><td>110 × 28 × 4 cm</td><td class="num">12 szt. (1–3, 7–15)</td></tr>
+              <tr><td>Stopnice proste</td><td>110 × 28 × 4 cm</td><td class="num">12 szt. (1–2 oraz 6–15)</td></tr>
               <tr><td>Stopnice zabiegowe</td><td>klin 40 mm — szablon z natury (do rogu)</td><td class="num">3 szt.</td></tr>
               <tr><td>Stopnica dojścia</td><td>wg krawędzi stropu</td><td class="num">1 szt.</td></tr>
               <tr><td>Podstopnice proste</td><td>110 × ~13–17 × 1,8–2,8 cm</td><td class="num">13 szt.</td></tr>
@@ -970,8 +967,8 @@
             <tr><td>Liczba podniesień</td><td class="num">15</td></tr>
             <tr><td>h</td><td class="num">18,67 cm</td></tr>
             <tr><td>s (Blondel ≈ 63)</td><td class="num">≈ 25,7 cm</td></tr>
-            <tr><td>Układ</td><td class="num">3 proste + 3 zabiegi + 8 prostych + dojście = 15</td></tr>
-            <tr><td>Wys. po zabiegu (stopień 6)</td><td class="num">112 cm</td></tr>
+            <tr><td>Układ (jak w wariancie A)</td><td class="num">2 proste + 3 zabiegi + 9 prostych + dojście = 15</td></tr>
+            <tr><td>Wys. po zabiegu (stopień 5)</td><td class="num">≈ 93,3 cm</td></tr>
           </tbody>
         </table>
       </div>

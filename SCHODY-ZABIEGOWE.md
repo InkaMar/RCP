@@ -14,7 +14,9 @@ https://htmlpreview.github.io/?https://github.com/InkaMar/RCP/blob/cursor/schody
 | Parametr | Wartość |
 |----------|---------|
 | Podest | **brak** |
-| Zabieg | **3×30° w róg do ściany** (biegun = styk ścian) |
+| Start | **2 stopnie proste** (nie 3) |
+| Zabieg | **3×30° (stopnie 3–5) w róg do ściany** |
+| Potem | 10 prostych (6–15) + dojście 16 |
 | Podniesienia | **16 × 17,5 cm** |
 | Głębokość biegu prostego | **28 cm** |
 | Szerokość | **110 cm** ściana–ściana |
