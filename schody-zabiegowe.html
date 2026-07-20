@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Schody zabiegowe 330×110 — projekt konstrukcji</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1a1f1c;
+      --muted: #5a635c;
+      --line: #c5cdc6;
+      --paper: #f3f0e8;
+      --panel: #fffdf8;
+      --steel: #3d4a52;
+      --wood: #c47a3a;
+      --wood-deep: #8f4f1f;
+      --accent: #1f6b4a;
+      --warn: #8a3b12;
+      --grid: #d9d3c6;
+      --shadow: 0 18px 40px rgba(26, 31, 28, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "IBM Plex Sans", sans-serif;
+      background:
+        radial-gradient(ellipse 80% 50% at 10% 0%, rgba(31, 107, 74, 0.08), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 90% 10%, rgba(196, 122, 58, 0.1), transparent 50%),
+        linear-gradient(180deg, #ebe6da 0%, var(--paper) 35%, #e7e2d6 100%);
+      line-height: 1.55;
+    }
+
+    .wrap {
+      width: min(1100px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 2.5rem 0 4rem;
+    }
+
+    header.hero {
+      position: relative;
+      padding: 2.2rem 0 2rem;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    header.hero::before {
+      content: "";
+      position: absolute;
+      inset: -20% -10% auto auto;
+      width: 280px;
+      height: 280px;
+      background: repeating-linear-gradient(
+        -18deg,
+        transparent,
+        transparent 10px,
+        rgba(61, 74, 82, 0.05) 10px,
+        rgba(61, 74, 82, 0.05) 11px
+      );
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin: 0 0 0.75rem;
+    }
+
+    h1 {
+      font-family: "Instrument Serif", Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      line-height: 1.05;
+      margin: 0 0 0.85rem;
+      max-width: 14ch;
+    }
+
+    .lead {
+      max-width: 62ch;
+      font-size: 1.08rem;
+      color: var(--muted);
+      margin: 0 0 1.4rem;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-top: 1.2rem;
+    }
+
+    a.btn, button.btn {
+      appearance: none;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: #f7f3ea;
+      padding: 0.7rem 1.1rem;
+      font: 600 0.92rem/1 "IBM Plex Sans", sans-serif;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    a.btn.secondary, button.btn.secondary {
+      background: transparent;
+      color: var(--ink);
+    }
+
+    a.btn:hover, button.btn:hover { transform: translateY(-1px); }
+
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+      margin: 1.6rem 0 0;
+    }
+
+    .kpi {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 0.9rem 1rem;
+      box-shadow: var(--shadow);
+    }
+
+    .kpi b {
+      display: block;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 1.35rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .kpi span {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    section {
+      margin: 2.4rem 0;
+      animation: rise 0.6s ease both;
+    }
+
+    section:nth-of-type(2) { animation-delay: 0.05s; }
+    section:nth-of-type(3) { animation-delay: 0.1s; }
+    section:nth-of-type(4) { animation-delay: 0.15s; }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      font-family: "Instrument Serif", Georgia, serif;
+      font-weight: 400;
+      font-size: 2rem;
+      margin: 0 0 0.5rem;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      margin: 1.4rem 0 0.55rem;
+    }
+
+    .section-lead {
+      color: var(--muted);
+      max-width: 70ch;
+      margin: 0 0 1.2rem;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 1.2rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
+    }
+
+    .callout {
+      border-left: 3px solid var(--accent);
+      padding: 0.85rem 1rem;
+      background: rgba(31, 107, 74, 0.06);
+      margin: 1rem 0;
+    }
+
+    .callout.warn {
+      border-left-color: var(--warn);
+      background: rgba(138, 59, 18, 0.07);
+    }
+
+    .callout strong { color: var(--ink); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 0.55rem 0.45rem;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    tr.winder td { background: rgba(196, 122, 58, 0.1); }
+    tr.top td { background: rgba(31, 107, 74, 0.08); font-weight: 600; }
+
+    svg.drawing {
+      width: 100%;
+      height: auto;
+      display: block;
+      background:
+        linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 20px 20px,
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 20px 20px,
+        #faf7f0;
+      border: 1px solid var(--line);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem 1.2rem;
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .legend i {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      margin-right: 0.35rem;
+      vertical-align: -2px;
+      border: 1px solid rgba(0,0,0,0.15);
+    }
+
+    .legend .wood { background: var(--wood); }
+    .legend .steel { background: var(--steel); }
+    .legend .winder { background: #e8b07a; }
+    .legend .walk { background: transparent; border: 2px dashed var(--accent); width: 18px; height: 0; vertical-align: 4px; }
+
+    ol.steps, ul.clean {
+      margin: 0.4rem 0 0;
+      padding-left: 1.2rem;
+    }
+
+    ol.steps li, ul.clean li { margin: 0.35rem 0; }
+
+    .mono {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.9em;
+    }
+
+    footer {
+      margin-top: 3rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .toc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem 0 0;
+    }
+
+    .toc a {
+      color: var(--ink);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: 0.4rem 0.7rem;
+      font-size: 0.85rem;
+    }
+
+    .toc a:hover { border-color: var(--ink); }
+
+    @media (max-width: 860px) {
+      .kpi-strip, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      h1 { max-width: none; }
+    }
+
+    @media print {
+      body { background: white; }
+      .cta-row, .toc { display: none; }
+      .panel, .kpi { box-shadow: none; }
+      section { break-inside: avoid; }
+      a.btn { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <p class="eyebrow">Projekt roboczy · bez podestu · otwór 330×110</p>
+      <h1>Schody zabiegowe</h1>
+      <p class="lead">
+        Zamiast podestu: <strong>schody zabiegowe</strong> na spawanej ramie ze stali
+        <strong>profil zamknięty, policzki piłokształtne (zig‑zag)</strong> — jak na zdjęciu referencyjnym.
+        Zabieg wchodzi <strong>w róg do ściany</strong>. Stopnie pełne (deska + podstopnica), szerokość biegu 110&nbsp;cm.
+      </p>
+      <div class="cta-row">
+        <a class="btn" href="#schemat-rzut">Rzut zabiegów</a>
+        <a class="btn secondary" href="#konstrukcja">Schemat spawania</a>
+        <a class="btn secondary" href="#zestawienie">Zestawienie materiałów</a>
+        <button class="btn secondary" type="button" onclick="window.print()">Drukuj / PDF</button>
+      </div>
+      <div class="kpi-strip">
+        <div class="kpi"><b>280 cm</b><span>wysokość kondygnacji</span></div>
+        <div class="kpi"><b>330×110</b><span>otwór w stropie [cm]</span></div>
+        <div class="kpi"><b>16 × 17,5</b><span>podniesień × wysokość [cm]</span></div>
+        <div class="kpi"><b>80×40</b><span>profil policzków (zig‑zag)</span></div>
+      </div>
+      <nav class="toc" aria-label="Spis treści">
+        <a href="#geometria">1. Geometria</a>
+        <a href="#schemat-rzut">2. Rzut</a>
+        <a href="#schemat-przekroj">3. Przekrój</a>
+        <a href="#zabiegi">4. Zabiegi</a>
+        <a href="#konstrukcja">5. Stal</a>
+        <a href="#montaz">6. Montaż</a>
+        <a href="#zestawienie">7. Materiały</a>
+        <a href="#argumenty">8. vs podest</a>
+        <a href="#alternatywy">9. Alternatywy</a>
+      </nav>
+    </header>
+
+    <section id="geometria">
+      <h2>1. Geometria — wariant A</h2>
+      <p class="section-lead">
+        Jedyny układ w tym opracowaniu. Przy H = 280 cm: równe podniesienia domykają wysokość i dają wygodną głębokość biegu.
+      </p>
+      <div class="panel">
+        <table>
+          <thead><tr><th>Parametr</th><th class="num">Wartość</th></tr></thead>
+          <tbody>
+            <tr><td>Wysokość kondygnacji</td><td class="num">280 cm</td></tr>
+            <tr><td>Liczba podniesień</td><td class="num">16</td></tr>
+            <tr><td>Wysokość stopnia h (z deską)</td><td class="num">17,5 cm</td></tr>
+            <tr><td>Głębokość biegu prostego s</td><td class="num">28 cm</td></tr>
+            <tr><td>Blondel 2h + s</td><td class="num">63 cm</td></tr>
+            <tr><td>Deska stopnicy</td><td class="num">40 mm</td></tr>
+            <tr><td>Szerokość biegu</td><td class="num">110 cm (ściana–ściana)</td></tr>
+            <tr><td>Otwór w stropie</td><td class="num">330 × 110 cm</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <strong>Wariant A:</strong> <span class="mono">16 × 17,5 cm = 280 cm</span>,
+        proste s = 28 cm, układ 2 + 3 zabiegi + 10 + dojście. Stopnie pełne z podstopnicami.
+      </div>
+    </section>
+
+    <section id="uklad">
+      <h2>Układ biegu (bez podestu)</h2>
+      <p class="section-lead">
+        Ten sam kształt L, ale bez podestu: na starcie <strong>tylko 2 stopnie proste</strong>, potem od razu
+        <strong>3 zabiegi w róg</strong>, dalej bieg górny. W narożniku zyskujesz wysokość zamiast pustego spocznika.
+      </p>
+      <div class="panel">
+        <table>
+          <thead>
+            <tr>
+              <th>Odcinek</th>
+              <th>Stopnie</th>
+              <th class="num">Liczba</th>
+              <th class="num">Wys. narastająco</th>
+              <th>Uwagi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Bieg dolny (prosty)</td>
+              <td>1–2</td>
+              <td class="num">2</td>
+              <td class="num">35,0 cm</td>
+              <td>s = 28 cm, szer. 110 cm — tylko 2 na starcie</td>
+            </tr>
+            <tr class="winder">
+              <td>Zabieg 90°</td>
+              <td>3–5</td>
+              <td class="num">3</td>
+              <td class="num">87,5 cm</td>
+              <td>po 30°; linia biegu R = 55 cm; w róg ściany</td>
+            </tr>
+            <tr>
+              <td>Bieg górny (prosty)</td>
+              <td>6–15</td>
+              <td class="num">10</td>
+              <td class="num">262,5 cm</td>
+              <td>w osi otworu 330 cm</td>
+            </tr>
+            <tr class="top">
+              <td>Stopień dojścia / posadzka</td>
+              <td>16</td>
+              <td class="num">1</td>
+              <td class="num">280,0 cm</td>
+              <td>w poziomie stropu / posadzki piętra</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout warn">
+        <strong>Otwór w stropie 330×110 cm</strong> — schody wypełniają całą szerokość 110 cm (od ściany do ściany).
+        Długość otworu 330 cm obsługuje bieg górny i przejście nad zabiegiem; bez podestu nie „zjada” ~96 cm płaskiej półki w planie użytkowym dolnej kondygnacji w tym samym miejscu, gdzie można już nabierać wysokości.
+      </div>
+    </section>
+
+    <section id="schemat-rzut">
+      <h2>2. Schemat — rzut z góry</h2>
+      <p class="section-lead">
+        Skala jednakowa: <span class="mono">1 cm = 1,6 px</span>. Bieg <strong>skręca w lewo</strong> —
+        wchodzisz na 2 proste od dołu (po prawej), zabieg w róg, potem bieg górny w lewo.
+        Wszystkie proste (1–2 i 6–15) mają <strong>głębokość 28 cm</strong>.
+      </p>
+      <div class="panel">
+        <!--
+          Skala 1.6 px/cm. Bieg SKRĘCA W LEWO:
+          start dolny po prawej, zabieg w prawy-dolny róg, bieg górny biegnie w LEWO.
+          Pivot (róg) = (578, 256). Bieg górny 10×44.8 px w lewo do x=130, dojście do x=50.
+        -->
+        <svg class="drawing" viewBox="0 0 900 480" role="img" aria-label="Rzut schodów zabiegowych — skręt w lewo">
+          <!-- Otwór stropu 330×110 nad biegiem górnym (po lewej) -->
+          <rect x="50" y="80" width="528" height="176" fill="rgba(31,107,74,0.06)" stroke="#1f6b4a" stroke-width="1.5" stroke-dasharray="6 4"/>
+          <text x="314" y="68" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#1f6b4a">OTWÓR STROPU 330 × 110 (skala)</text>
+          <line x1="50" y1="48" x2="578" y2="48" stroke="#1f6b4a" stroke-width="1"/>
+          <text x="314" y="40" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#1f6b4a">330 cm</text>
+          <line x1="34" y1="80" x2="34" y2="256" stroke="#5a635c" stroke-width="1"/>
+          <text x="20" y="172" font-family="IBM Plex Mono, monospace" font-size="12" fill="#5a635c">110</text>
+
+          <!-- Obrys klatki L: narożnik po prawej + bieg dolny -->
+          <rect x="578" y="80" width="176" height="176" fill="none" stroke="#1a1f1c" stroke-width="2.2"/>
+          <rect x="578" y="256" width="176" height="89.6" fill="none" stroke="#1a1f1c" stroke-width="2.2"/>
+          <rect x="50" y="80" width="528" height="176" fill="none" stroke="#1a1f1c" stroke-width="2.2"/>
+
+          <!-- Bieg dolny: 2 × 28 cm, wchodzisz od dołu -->
+          <g id="lower">
+            <rect x="578" y="300.8" width="176" height="44.8" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1.2"/>
+            <text x="666" y="328" text-anchor="middle" fill="#fff" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">1 · 28 cm</text>
+            <rect x="578" y="256" width="176" height="44.8" fill="#cc843f" stroke="#8f4f1f" stroke-width="1.2"/>
+            <text x="666" y="283" text-anchor="middle" fill="#fff" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">2 · 28 cm</text>
+          </g>
+
+          <!-- Zabiegi 3–5 w prawy-dolny róg (biegun 578,256), skręt w lewo -->
+          <g id="winders">
+            <path d="M578,256 L754,256 L754,164.5 Z" fill="#e8b07a" stroke="#8f4f1f" stroke-width="1.3"/>
+            <path d="M578,256 L754,164.5 L754,80 L669.5,80 Z" fill="#e0a36a" stroke="#8f4f1f" stroke-width="1.3"/>
+            <path d="M578,256 L669.5,80 L578,80 Z" fill="#d99858" stroke="#8f4f1f" stroke-width="1.3"/>
+            <text x="676" y="235" fill="#1a1f1c" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">3</text>
+            <text x="696" y="145" fill="#1a1f1c" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">4</text>
+            <text x="608" y="115" fill="#1a1f1c" font-size="15" font-weight="700" font-family="IBM Plex Sans, sans-serif">5</text>
+          </g>
+
+          <!-- Bieg górny: 10 × 28 cm w LEWO od bieguna, potem dojście -->
+          <g id="upper-treads">
+            <rect x="533.2" y="80" width="44.8" height="176" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="488.4" y="80" width="44.8" height="176" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="443.6" y="80" width="44.8" height="176" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="398.8" y="80" width="44.8" height="176" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="354" y="80" width="44.8" height="176" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="309.2" y="80" width="44.8" height="176" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="264.4" y="80" width="44.8" height="176" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="219.6" y="80" width="44.8" height="176" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="174.8" y="80" width="44.8" height="176" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="130" y="80" width="44.8" height="176" fill="#cc843f" stroke="#8f4f1f" stroke-width="1"/>
+            <rect x="50" y="80" width="80" height="176" fill="#1f6b4a" fill-opacity="0.3" stroke="#1f6b4a" stroke-width="1.5"/>
+            <text x="551" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">6</text>
+            <text x="506" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">7</text>
+            <text x="461" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">8</text>
+            <text x="417" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">9</text>
+            <text x="368" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">10</text>
+            <text x="323" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">11</text>
+            <text x="278" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">12</text>
+            <text x="234" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">13</text>
+            <text x="189" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">14</text>
+            <text x="144" y="172" fill="#fff" font-size="12" font-weight="700" font-family="IBM Plex Sans, sans-serif">15</text>
+            <text x="78" y="165" fill="#1f6b4a" font-size="12" font-weight="700" font-family="IBM Plex Mono, monospace">16</text>
+            <text x="70" y="182" fill="#1f6b4a" font-size="10" font-family="IBM Plex Mono, monospace">piętro</text>
+          </g>
+
+          <!-- Wymiar głębokości jednego stopnia górnego -->
+          <line x1="309.2" y1="270" x2="354" y2="270" stroke="#1a1f1c" stroke-width="1.5"/>
+          <text x="331" y="288" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#1a1f1c">28 cm</text>
+          <text x="331" y="304" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5a635c">jak 1 i 2</text>
+
+          <!-- Linia biegu: z dołu w górę, skręt w LEWO, w lewo -->
+          <path d="M666,330 L666,270 Q666,230 624,190 Q578,150 534,168 L120,168" fill="none" stroke="#1f6b4a" stroke-width="2.2" stroke-dasharray="8 5"/>
+          <!-- strzałka kierunku (w lewo) -->
+          <path d="M132,162 L118,168 L132,174" fill="none" stroke="#1f6b4a" stroke-width="2.2"/>
+
+          <circle cx="578" cy="256" r="5" fill="#1a1f1c"/>
+          <text x="470" y="274" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5a635c">biegun = RÓG ŚCIAN</text>
+
+          <line x1="774" y1="256" x2="774" y2="345.6" stroke="#5a635c" stroke-width="1"/>
+          <text x="788" y="305" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5a635c" transform="rotate(90 788 305)">56 = 2×28</text>
+
+          <!-- Ściany (grube) -->
+          <line x1="50" y1="80" x2="754" y2="80" stroke="#3d4a52" stroke-width="4"/>
+          <line x1="578" y1="256" x2="754" y2="256" stroke="#3d4a52" stroke-width="4"/>
+          <line x1="754" y1="80" x2="754" y2="345.6" stroke="#3d4a52" stroke-width="4"/>
+          <line x1="578" y1="256" x2="578" y2="345.6" stroke="#3d4a52" stroke-width="4"/>
+
+          <text x="50" y="400" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8a3b12">SKRĘT W LEWO · każdy prosty stopień (1–2 i 6–15) = 28 cm · 10×28 = 280 + 50 dojścia = 330</text>
+          <text x="50" y="420" font-family="IBM Plex Mono, monospace" font-size="12" fill="#3d4a52">grube linie = ściany · profil zig‑zag pokazany w sekcji 5</text>
+        </svg>
+        <div class="legend">
+          <span><i class="wood"></i>proste 28 cm (ta sama skala)</span>
+          <span><i class="winder"></i>zabiegi 3–5 → w róg (skręt w lewo)</span>
+          <span><i class="steel"></i>ściany klatki</span>
+          <span><i class="walk"></i>linia chodu →</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="schemat-przekroj">
+      <h2>3. Schemat — przekrój / rozwinięcie linii biegu</h2>
+      <p class="section-lead">
+        Rozwinięcie po linii chodu. Podest = 0 cm długości. Zabiegi wnoszą wysokość w miejscu dawnego spocznika.
+        Grubość stropu przyjęta jak na rysunku ≈ 18,7 cm (spód stropu ≈ 261 cm).
+      </p>
+      <div class="panel">
+        <svg class="drawing" viewBox="0 0 900 420" role="img" aria-label="Przekrój rozwinięty schodów">
+          <!-- Ground and upper floor -->
+          <rect x="40" y="340" width="820" height="24" fill="#4a524c"/>
+          <rect x="480" y="60" width="380" height="22" fill="#9aa39c"/>
+          <!-- opening underside -->
+          <rect x="480" y="82" width="380" height="10" fill="#6d7670"/>
+
+          <text x="50" y="380" font-family="IBM Plex Mono, monospace" font-size="12" fill="#5a635c">poziom 0,00 (posadzka parteru)</text>
+          <text x="700" y="48" font-family="IBM Plex Mono, monospace" font-size="12" fill="#5a635c">+280,00 (piętro)</text>
+
+          <!-- Height marks -->
+          <line x1="30" y1="340" x2="30" y2="60" stroke="#5a635c" stroke-width="1"/>
+          <text x="18" y="210" text-anchor="middle" transform="rotate(-90 18 210)" font-family="IBM Plex Mono, monospace" font-size="12" fill="#5a635c">280</text>
+
+          <!-- Stairs: 16 rises, h=17.5 => 17.5*scale. Vertical: 280px for 280cm => 1px/cm; use 1px = 1cm from y=340 -->
+          <!-- Horizontal: lower 3*28=84; winders ~3*28=84 at walk; upper 9*28=252; total walk ~420 cm -->
+          <!-- Map 420cm to ~700px => scaleX = 700/420 ≈ 1.67 -->
+
+          <!-- Draw step profile -->
+          <g stroke="#8f4f1f" stroke-width="1.2" fill="#c47a3a">
+            <!-- helper via path sawtooth -->
+            <path d="M60,340
+              H106.8 V322.5
+              H153.6 V305
+              H200.4 V287.5
+              H247.2 V270
+              H294 V252.5
+              H340.8 V235
+              H387.6 V217.5
+              H434.4 V200
+              H481.2 V182.5
+              H528 V165
+              H574.8 V147.5
+              H621.6 V130
+              H668.4 V112.5
+              H715.2 V95
+              H762 V77.5
+              H808.8 V60
+              H860" fill="none" stroke="#c47a3a" stroke-width="3"/>
+          </g>
+
+          <!-- Risers as filled blocks (simplified sample + all outlines) -->
+          <g fill="#d8a06a" stroke="#8f4f1f" stroke-width="0.8" opacity="0.9">
+            <!-- generate visually important ones -->
+            <rect x="60" y="322.5" width="46.8" height="17.5"/>
+            <rect x="106.8" y="305" width="46.8" height="17.5"/>
+            <!-- zabiegi 3–5 -->
+            <rect x="153.6" y="287.5" width="46.8" height="17.5" fill="#e8b07a"/>
+            <rect x="200.4" y="270" width="46.8" height="17.5" fill="#e8b07a"/>
+            <rect x="247.2" y="252.5" width="46.8" height="17.5" fill="#e8b07a"/>
+            <rect x="294" y="235" width="46.8" height="17.5"/>
+            <rect x="340.8" y="217.5" width="46.8" height="17.5"/>
+            <rect x="387.6" y="200" width="46.8" height="17.5"/>
+            <rect x="434.4" y="182.5" width="46.8" height="17.5"/>
+            <rect x="481.2" y="165" width="46.8" height="17.5"/>
+            <rect x="528" y="147.5" width="46.8" height="17.5"/>
+            <rect x="574.8" y="130" width="46.8" height="17.5"/>
+            <rect x="621.6" y="112.5" width="46.8" height="17.5"/>
+            <rect x="668.4" y="95" width="46.8" height="17.5"/>
+            <rect x="715.2" y="77.5" width="46.8" height="17.5"/>
+            <rect x="762" y="60" width="46.8" height="17.5" fill="#1f6b4a" fill-opacity="0.35"/>
+          </g>
+
+          <!-- Steel stringer under -->
+          <path d="M55,348 L55,330 L200,275 L480,130 L820,68" fill="none" stroke="#3d4a52" stroke-width="4"/>
+
+          <!-- Dimension h -->
+          <line x1="95" y1="340" x2="95" y2="322.5" stroke="#1a1f1c" stroke-width="1"/>
+          <text x="110" y="335" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1a1f1c">h=17,5</text>
+          <line x1="60" y1="355" x2="106.8" y2="355" stroke="#1a1f1c" stroke-width="1"/>
+          <text x="70" y="368" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1a1f1c">s=28</text>
+
+          <!-- Winder bracket -->
+          <line x1="200" y1="390" x2="341" y2="390" stroke="#c47a3a" stroke-width="2"/>
+          <text x="270" y="408" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8f4f1f">zabiegi 3–5 (po 2 prostych)</text>
+
+          <!-- Opening length -->
+          <line x1="480" y1="30" x2="860" y2="30" stroke="#5a635c" stroke-width="1"/>
+          <text x="670" y="24" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#5a635c">otwór ~330 (w rzucie biegu górnego)</text>
+
+          <!-- Headroom hint -->
+          <path d="M220,287 L220,82 L480,82" fill="none" stroke="#b04040" stroke-width="1.2" stroke-dasharray="4 3"/>
+          <text x="250" y="100" font-family="IBM Plex Mono, monospace" font-size="11" fill="#b04040">kontrola przejścia ≥ 200 cm</text>
+        </svg>
+      </div>
+    </section>
+
+    <section id="zabiegi">
+      <h2>4. Geometria zabiegów (stopnie 3–5)</h2>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Założenia — zabieg w róg do ściany</h3>
+          <ul class="clean">
+            <li>Zakres skrętu: <strong>90°</strong> → 3 stopnie × <strong>30°</strong></li>
+            <li>Szerokość biegu (ściana–ściana): <strong>110 cm</strong></li>
+            <li><strong>Biegun = wewnętrzny róg dwóch ścian</strong> — noski zabiegów zbiegają się w narożnik; kliny dochodzą do ściany (nie ma „wolnego” spocznika w rogu)</li>
+            <li>Linia biegu: <strong>R = 55 cm</strong> od bieguna → głębokość na linii chodu ≈ <strong>28,8 cm</strong></li>
+            <li>Przy samym rogu: spawany <strong>słupek narożny</strong> (jak na zdjęciu) — stopnie nie muszą mieć 0 cm, ale metal idzie w róg</li>
+            <li>Na zewnętrzu (R = 110): głębokość ≈ <strong>57–58 cm</strong> — tu idzie zewnętrzny policzek zig‑zag</li>
+          </ul>
+          <div class="callout warn">
+            <strong>Krytyczne:</strong> biegun zabiegu ustaw w styku ścian. Poprzeczki zabiegowe (promienie) idą od słupka narożnego / rogu do zewnętrznego policzka — dokładnie jak na referencyjnym zdjęciu.
+          </div>
+        </div>
+        <div class="panel">
+          <svg class="drawing" viewBox="0 0 360 320" aria-label="Geometria zabiegu">
+            <rect x="40" y="40" width="220" height="220" fill="none" stroke="#1a1f1c" stroke-width="2"/>
+            <!-- pivot at bottom-right of square = inner corner -->
+            <circle cx="260" cy="260" r="4" fill="#1a1f1c"/>
+            <!-- rays at 0, 30, 60, 90 degrees from left-going to up-going -->
+            <!-- 0° along -X, 90° along -Y -->
+            <g stroke="#8f4f1f" stroke-width="1.5">
+              <line x1="260" y1="260" x2="40" y2="260"/>
+              <line x1="260" y1="260" x2="69.6" y2="150"/>
+              <line x1="260" y1="260" x2="150" y2="69.6"/>
+              <line x1="260" y1="260" x2="260" y2="40"/>
+            </g>
+            <path d="M40,260 L260,260 L69.6,150 Z" fill="#e8b07a" opacity="0.85" stroke="#8f4f1f"/>
+            <path d="M260,260 L69.6,150 L150,69.6 Z" fill="#e0a36a" opacity="0.85" stroke="#8f4f1f"/>
+            <path d="M260,260 L150,69.6 L260,40 Z" fill="#d99858" opacity="0.85" stroke="#8f4f1f"/>
+            <!-- walking arc -->
+            <path d="M205,260 A55,55 0 0 0 260,205" fill="none" stroke="#1f6b4a" stroke-width="2" stroke-dasharray="5 4"/>
+            <circle cx="205" cy="260" r="3" fill="#1f6b4a"/>
+            <text x="70" y="245" font-size="14" font-weight="700">3</text>
+            <text x="130" y="175" font-size="14" font-weight="700">4</text>
+            <text x="210" y="120" font-size="14" font-weight="700">5</text>
+            <text x="270" y="275" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5a635c">biegun</text>
+            <text x="40" y="300" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1f6b4a">łuk linii biegu R=55</text>
+            <text x="280" y="60" font-family="IBM Plex Mono, monospace" font-size="11" fill="#5a635c">30°</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:1rem">
+        <h3>Tabela wysokości wszystkich stopni</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Nr</th>
+              <th>Typ</th>
+              <th class="num">Wys. powierzchni [cm]</th>
+              <th class="num">Podstopnica [cm]</th>
+              <th>Uwagi wykonawcze</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>prosty</td><td class="num">17,5</td><td class="num">17,5</td><td>start od posadzki</td></tr>
+            <tr><td>2</td><td>prosty</td><td class="num">35,0</td><td class="num">17,5</td><td>ostatni prosty przed zabiegiem (tylko 2 na początku)</td></tr>
+            <tr class="winder"><td>3</td><td>zabiegowy</td><td class="num">52,5</td><td class="num">17,5</td><td>klin 0–30° → w róg</td></tr>
+            <tr class="winder"><td>4</td><td>zabiegowy</td><td class="num">70,0</td><td class="num">17,5</td><td>klin 30–60°</td></tr>
+            <tr class="winder"><td>5</td><td>zabiegowy</td><td class="num">87,5</td><td class="num">17,5</td><td>klin 60–90°</td></tr>
+            <tr><td>6</td><td>prosty</td><td class="num">105,0</td><td class="num">17,5</td><td>pierwszy po zabiegu</td></tr>
+            <tr><td>7</td><td>prosty</td><td class="num">122,5</td><td class="num">17,5</td><td>kontrola przejścia w otworze</td></tr>
+            <tr><td>8</td><td>prosty</td><td class="num">140,0</td><td class="num">17,5</td><td></td></tr>
+            <tr><td>9</td><td>prosty</td><td class="num">157,5</td><td class="num">17,5</td><td></td></tr>
+            <tr><td>10</td><td>prosty</td><td class="num">175,0</td><td class="num">17,5</td><td></td></tr>
+            <tr><td>11</td><td>prosty</td><td class="num">192,5</td><td class="num">17,5</td><td></td></tr>
+            <tr><td>12</td><td>prosty</td><td class="num">210,0</td><td class="num">17,5</td><td></td></tr>
+            <tr><td>13</td><td>prosty</td><td class="num">227,5</td><td class="num">17,5</td><td></td></tr>
+            <tr><td>14</td><td>prosty</td><td class="num">245,0</td><td class="num">17,5</td><td></td></tr>
+            <tr><td>15</td><td>prosty</td><td class="num">262,5</td><td class="num">17,5</td><td>przed posadzką piętra</td></tr>
+            <tr class="top"><td>16</td><td>dojście</td><td class="num">280,0</td><td class="num">17,5</td><td>równy z posadzką / progiem otworu</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="konstrukcja">
+      <h2>5. Konstrukcja stalowa — policzki piłokształtne (jak na zdjęciu)</h2>
+      <p class="section-lead">
+        Rama spawana z <strong>profilu zamkniętego prostokątnego</strong> (np. 80×40×3 lub 100×50×3).
+        Dwa boczne policzki w kształcie <strong>zig‑zag / piły</strong> powtarzają obrys stopni (podstopnica + stopnica).
+        Między nimi — poprzeczki pod każdą deskę + blaszkowe uchwyty z otworami. Zabieg: poprzeczki promieniowo <strong>w róg ściany</strong>.
+      </p>
+
+      <div class="callout">
+        <strong>Wysokość stopnia z deską = 17,5 cm:</strong>
+        powierzchnia stali pod stopnicą + grubość deski (40 mm) musi dać równe podniesienie.
+        Czyli górna półka zig‑zaga pod deską leży na rzędnej <span class="mono">(nr × 17,5) − 4,0 cm</span>.
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Elementy ramy (kolejność spawania)</h3>
+          <ol class="steps">
+            <li><strong>Policzki piłokształtne (2 szt. na bieg prosty)</strong> — odcinki profilu cięte na ucios: pion = podstopnica (~13,5 cm stali przy desce 40 mm), poziom = głębokość 28 cm. Spawane w ciągły zig‑zag.</li>
+            <li><strong>Poprzeczki stopni</strong> — ten sam profil lub 60×40 / 50×30, długość ≈ 100–104 cm (w świetle między policzkami przy biegu 110 cm). Jedna na każdy stopień.</li>
+            <li><strong>Blaszki montażowe</strong> — płaskownik 5–6 mm z otworami Ø6–8, przyspawane na poprzeczce (2–3 szt./stopień) — wkręty od spodu w deskę.</li>
+            <li><strong>Zabieg w róg</strong> — słupek narożny (profil 80×80 lub 60×60) <em>w styku ścian</em>; od niego 4 promienie (noski) + 3 ramki stopni zabiegowych; zewnętrzny policzek zig‑zag skręca o 90° po obwodzie.</li>
+            <li><strong>Słupki podporowe</strong> — pionowe profile do posadzki w połowie biegu (jak na zdjęciu), szczególnie pod biegiem górnym.</li>
+            <li><strong>Mocowanie</strong> — góra: do czoła stropu / wieńca; róg i ściany: stopki + kotwy; opcjonalnie uchwyty kątownikowe do ściany przy policzku zewnętrznym.</li>
+          </ol>
+        </div>
+        <div class="panel">
+          <svg class="drawing" viewBox="0 0 440 380" aria-label="Schemat ramy piłokształtnej z zabiegiem">
+            <!-- floor -->
+            <rect x="30" y="300" width="380" height="14" fill="#8a908a"/>
+            <!-- upper slab hint -->
+            <rect x="250" y="40" width="160" height="16" fill="#b7beb8"/>
+
+            <!-- outer zig-zag stringer (side view-ish) -->
+            <path d="M50,300 L50,282 L78,282 L78,264.5 L106,264.5 L106,247 L134,247 L134,229.5
+                     L162,229.5 L162,212 L190,212 L190,194.5 L218,194.5 L218,177
+                     L246,177 L246,159.5 L274,159.5 L274,142 L302,142 L302,124.5
+                     L330,124.5 L330,107 L358,107 L358,89.5 L386,89.5 L386,56"
+                  fill="none" stroke="#1a1f1c" stroke-width="5" stroke-linejoin="miter"/>
+
+            <!-- inner stringer offset -->
+            <path d="M68,300 L68,286 L90,286 L90,270 L118,270 L118,253.5 L146,253.5 L146,236
+                     L174,236 L174,218.5 L202,218.5 L202,201 L230,201 L230,183.5
+                     L258,183.5 L258,166 L286,166 L286,148.5 L314,148.5 L314,131
+                     L342,131 L342,113.5 L370,113.5 L370,70"
+                  fill="none" stroke="#3d4a52" stroke-width="3.5" stroke-linejoin="miter"/>
+
+            <!-- cross bars + tabs on a few steps -->
+            <g stroke="#3d4a52" stroke-width="2">
+              <line x1="50" y1="282" x2="68" y2="286"/>
+              <line x1="106" y1="247" x2="118" y2="253.5"/>
+              <line x1="162" y1="212" x2="174" y2="218.5"/>
+              <line x1="218" y1="177" x2="230" y2="183.5"/>
+              <line x1="274" y1="142" x2="286" y2="148.5"/>
+              <line x1="330" y1="107" x2="342" y2="113.5"/>
+            </g>
+            <g fill="#5a635c">
+              <rect x="112" y="244" width="10" height="6"/><rect x="118" y="250" width="10" height="6"/>
+              <rect x="224" y="174" width="10" height="6"/><rect x="230" y="180" width="10" height="6"/>
+              <rect x="336" y="104" width="10" height="6"/><rect x="342" y="110" width="10" height="6"/>
+            </g>
+
+            <!-- vertical post -->
+            <rect x="200" y="201" width="10" height="99" fill="#1a1f1c"/>
+            <rect x="190" y="300" width="30" height="8" fill="#3d4a52"/>
+
+            <!-- winder corner inset (plan hint) -->
+            <g transform="translate(40,40)">
+              <rect x="0" y="0" width="110" height="90" fill="#faf7f0" stroke="#1a1f1c" stroke-width="1.5"/>
+              <text x="8" y="16" font-family="IBM Plex Mono, monospace" font-size="10" fill="#5a635c">zabieg → róg</text>
+              <circle cx="100" cy="80" r="4" fill="#1a1f1c"/>
+              <line x1="100" y1="80" x2="10" y2="80" stroke="#c47a3a" stroke-width="2"/>
+              <line x1="100" y1="80" x2="20" y2="40" stroke="#c47a3a" stroke-width="2"/>
+              <line x1="100" y1="80" x2="55" y2="12" stroke="#c47a3a" stroke-width="2"/>
+              <line x1="100" y1="80" x2="100" y2="10" stroke="#c47a3a" stroke-width="2"/>
+              <path d="M10,10 H100 V80 H10 Z" fill="none" stroke="#3d4a52" stroke-width="2.5"/>
+              <text x="70" y="78" font-size="9" font-family="IBM Plex Mono, monospace" fill="#8a3b12">ściana</text>
+            </g>
+
+            <text x="40" y="340" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1a1f1c">policzek zig‑zag (profil zamknięty)</text>
+            <text x="40" y="358" font-family="IBM Plex Mono, monospace" font-size="11" fill="#3d4a52">poprzeczki + blaszki pod wkręty</text>
+            <text x="280" y="358" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1a1f1c">słupek do posadzki</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:1rem">
+        <h3>Przekrój stopnia prostego (między dwoma policzkami)</h3>
+        <svg class="drawing" viewBox="0 0 720 280" aria-label="Przekrój stopnia na ramie zig-zag">
+          <rect x="40" y="30" width="28" height="220" fill="#b7beb8"/>
+          <rect x="652" y="30" width="28" height="220" fill="#b7beb8"/>
+          <text x="54" y="20" text-anchor="middle" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5a635c">ściana</text>
+          <text x="666" y="20" text-anchor="middle" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5a635c">ściana</text>
+
+          <!-- zig-zag cheek sections (cut through horizontal shelf) -->
+          <rect x="78" y="100" width="40" height="24" fill="#1a1f1c"/>
+          <rect x="78" y="124" width="16" height="70" fill="#1a1f1c"/>
+          <rect x="602" y="100" width="40" height="24" fill="#1a1f1c"/>
+          <rect x="626" y="124" width="16" height="70" fill="#1a1f1c"/>
+
+          <!-- cross member -->
+          <rect x="118" y="108" width="484" height="14" fill="#3d4a52"/>
+          <!-- mounting tabs -->
+          <rect x="200" y="98" width="28" height="10" fill="#5a635c"/>
+          <rect x="346" y="98" width="28" height="10" fill="#5a635c"/>
+          <rect x="492" y="98" width="28" height="10" fill="#5a635c"/>
+          <circle cx="214" cy="103" r="2.5" fill="#faf7f0"/>
+          <circle cx="360" cy="103" r="2.5" fill="#faf7f0"/>
+          <circle cx="506" cy="103" r="2.5" fill="#faf7f0"/>
+
+          <!-- wood tread + riser -->
+          <rect x="74" y="76" width="572" height="22" fill="#c47a3a" stroke="#8f4f1f" stroke-width="1.5"/>
+          <rect x="74" y="98" width="12" height="90" fill="#e0a36a" stroke="#8f4f1f" stroke-width="1.2"/>
+
+          <line x1="78" y1="240" x2="642" y2="240" stroke="#1a1f1c" stroke-width="1"/>
+          <text x="360" y="258" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#1a1f1c">110 cm — rama wypełnia klatkę (ściana–ściana)</text>
+          <text x="360" y="64" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8f4f1f">stopnica 40 mm (wkręty od spodu w blaszki)</text>
+          <text x="140" y="160" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8f4f1f">podstopnica</text>
+          <text x="150" y="145" font-family="IBM Plex Mono, monospace" font-size="12" fill="#3d4a52">poprzeczka</text>
+          <text x="78" y="90" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1a1f1c">zig‑zag</text>
+          <text x="600" y="90" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1a1f1c">zig‑zag</text>
+        </svg>
+        <ul class="clean">
+          <li>Profil policzków: <strong>80×40×3</strong> (min.) lub <strong>100×50×3</strong> — jak na zdjęciu referencyjnym.</li>
+          <li>Stopnica: deska <strong>40 mm</strong>; podstopnica z deski zamyka czoło (pełny stopień).</li>
+          <li>Wkręty do drewna od spodu przez blaszki; między stal a drewno: taśma EPDM / podkładki (cisza).</li>
+          <li>Przy ścianie: luz 5–10 mm na stronę albo oparcie policzka o uchwyty ścienne.</li>
+        </ul>
+      </div>
+
+      <div class="panel" style="margin-top:1rem">
+        <h3>Detal zabiegu — spawanie w róg</h3>
+        <div class="grid-2">
+          <div>
+            <ol class="steps">
+              <li>Ustaw <strong>słupek narożny</strong> dokładnie w styku dwóch ścian (kotwa w posadzce + ewentualnie do ścian).</li>
+              <li>Od słupka wytycz <strong>4 promienie nosków</strong> co 30° (0° / 30° / 60° / 90°) — to górne krawędzie poprzeczek zabiegu.</li>
+              <li>Spawaj ramki stopni <strong>3–5</strong>: każdy klin ma zewnętrzny odcinek zig‑zag i poprzeczkę do słupka.</li>
+              <li>Wewnętrzne końce poprzeczek dochodzą do słupka / rogu — <strong>nie zostawiaj pustego podestu w narożniku</strong>.</li>
+              <li>Po spawaniu sprawdź laserem rzędne desek zabiegu: <strong>52,5 / 70 / 87,5 cm</strong>.</li>
+            </ol>
+          </div>
+          <svg class="drawing" viewBox="0 0 340 260" aria-label="Detal zabiegu w róg">
+            <!-- two walls meeting -->
+            <rect x="240" y="40" width="50" height="180" fill="#c5cdc6"/>
+            <rect x="40" y="190" width="250" height="50" fill="#c5cdc6"/>
+            <text x="265" y="130" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5a635c" transform="rotate(90 265 130)">ściana</text>
+            <text x="140" y="220" font-size="11" font-family="IBM Plex Mono, monospace" fill="#5a635c">ściana</text>
+            <!-- corner post -->
+            <rect x="228" y="178" width="18" height="18" fill="#1a1f1c"/>
+            <!-- winder frames -->
+            <path d="M60,190 L246,190 L246,160 Z" fill="#e8b07a" stroke="#1a1f1c" stroke-width="1.5" opacity="0.9"/>
+            <path d="M60,190 L246,160 L200,60 L60,60 Z" fill="#e0a36a" stroke="#1a1f1c" stroke-width="1.5" opacity="0.85"/>
+            <path d="M246,190 L246,160 L200,60 L246,60 Z" fill="#d99858" stroke="#1a1f1c" stroke-width="1.5" opacity="0.9"/>
+            <!-- steel rays -->
+            <line x1="237" y1="187" x2="60" y2="187" stroke="#1a1f1c" stroke-width="3"/>
+            <line x1="237" y1="187" x2="70" y2="100" stroke="#1a1f1c" stroke-width="3"/>
+            <line x1="237" y1="187" x2="160" y2="55" stroke="#1a1f1c" stroke-width="3"/>
+            <line x1="237" y1="187" x2="237" y2="55" stroke="#1a1f1c" stroke-width="3"/>
+            <!-- outer zig zag hint -->
+            <path d="M55,195 L55,55 L250,55" fill="none" stroke="#3d4a52" stroke-width="4"/>
+            <text x="100" y="175" font-size="14" font-weight="700">3</text>
+            <text x="120" y="120" font-size="14" font-weight="700">4</text>
+            <text x="200" y="100" font-size="14" font-weight="700">5</text>
+            <text x="40" y="250" font-family="IBM Plex Mono, monospace" font-size="11" fill="#8a3b12">promienie stali → róg (bez podestu)</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <section id="montaz">
+      <h2>6. Kolejność spawania i montażu (rama zig‑zag)</h2>
+      <div class="panel">
+        <ol class="steps">
+          <li><strong>Obmiar natury</strong> — otwór 330×110, H = 280, ką ścian, kąt narożnika (czy na pewno 90°).</li>
+          <li><strong>Szablon 1:1 na posadzce</strong> — noski wszystkich stopni; biegun zabiegu w styku ścian; linia biegu R = 55 cm.</li>
+          <li><strong>Pociąć policzki</strong> — lista cięć: na każdy stopień prosty odcinek poziomy 28 cm + pion ≈ 13,5 cm (stal pod deską 40 mm przy h = 17,5). Uciosy 45° / wg kąta.</li>
+          <li><strong>Zespawać oba policzki biegu dolnego</strong>, wstawić poprzeczki + blaszki; ustawić w klatce, wypoziomować.</li>
+          <li><strong>Zabieg:</strong> słupek w róg → promienie → zewnętrzny zig‑zag skrętu → sprawdzenie, że kliny dochodzą do ściany.</li>
+          <li><strong>Bieg górny</strong> — kolejne segmenty zig‑zag do stropu; słupki podporowe do posadzki; kotwienie góry w otworze stropu.</li>
+          <li><strong>Malowanie</strong> antykorozyjne (jak czarna rama na zdjęciu) przed montażem drewna.</li>
+          <li><strong>Podstopnice, potem stopnice</strong> — wkręty od spodu w blaszki; na zabiegu szablony klinów z natury.</li>
+          <li><strong>Balustrada</strong> — słupki przyspawane do policzka / poprzeczek; przy zabiegu prowadzić po łuku.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="zestawienie">
+      <h2>7. Zestawienie materiałów (orientacyjne)</h2>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Stal — rama piłokształtna</h3>
+          <table>
+            <thead><tr><th>Element</th><th>Profil</th><th class="num">Ilość (orient.)</th></tr></thead>
+            <tbody>
+              <tr><td>Policzki zig‑zag + poprzeczki</td><td>profil zamk. <strong>80×40×3</strong> (lub 100×50×3)</td><td class="num">~35–45 m</td></tr>
+              <tr><td>Słupek narożny zabiegu</td><td>80×80×3 / 60×60×3</td><td class="num">1 szt. (wys. do ~90 cm+)</td></tr>
+              <tr><td>Słupki podporowe do posadzki</td><td>80×40 / 60×60</td><td class="num">2–4 szt.</td></tr>
+              <tr><td>Blaszki montażowe pod stopnice</td><td>płaskownik 5–6 mm</td><td class="num">~40–50 szt.</td></tr>
+              <tr><td>Stopki / płyty kotwiące</td><td>blacha 8–10 mm</td><td class="num">4–8 szt.</td></tr>
+              <tr><td>Kotwy chemiczne</td><td>M10–M12</td><td class="num">~20–30 szt.</td></tr>
+              <tr><td>Uchwyty do ściany (opcjonalnie)</td><td>kątownik 50×50</td><td class="num">co 50–60 cm przy policzku</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel">
+          <h3>Drewno</h3>
+          <table>
+            <thead><tr><th>Element</th><th>Wymiar</th><th class="num">Ilość</th></tr></thead>
+            <tbody>
+              <tr><td>Stopnice proste</td><td>110 × 28 × 4 cm</td><td class="num">12 szt. (1–2 oraz 6–15)</td></tr>
+              <tr><td>Stopnice zabiegowe</td><td>klin 40 mm — szablon z natury (do rogu)</td><td class="num">3 szt.</td></tr>
+              <tr><td>Stopnica dojścia</td><td>wg krawędzi stropu</td><td class="num">1 szt.</td></tr>
+              <tr><td>Podstopnice proste</td><td>110 × ~13–17 × 1,8–2,8 cm</td><td class="num">13 szt.</td></tr>
+              <tr><td>Podstopnice zabiegowe</td><td>sektory do ściany</td><td class="num">3 szt.</td></tr>
+            </tbody>
+          </table>
+          <p style="margin:0.8rem 0 0;color:var(--muted);font-size:0.9rem">
+            Zabiegi rozkroić dopiero po spawaniu ramy — szablon z kartonu na gotowych poprzeczkach w narożniku.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="argumenty">
+      <h2>8. Co powiedzieć projektantowi (podest vs zabieg)</h2>
+      <div class="panel">
+        <ul class="clean">
+          <li><strong>Podest ~96 cm</strong> to prawie metr płaskiej półki, która nie skraca drogi w pionie.</li>
+          <li><strong>Trzy zabiegi w róg ściany</strong> dają <strong>+52,5 cm wysokości</strong> w tym samym narożniku — i taką ramę da się zrobić w stylu piłokształtnym ze zdjęcia.</li>
+          <li>Otwór <strong>330×110</strong> zostaje; zmieniamy geometrię biegu (bez spocznika).</li>
+          <li>Konstrukcja = spawany profil zamknięty zig‑zag + poprzeczki + słupek w narożniku — nie drewniane policzki „na wylot”.</li>
+        </ul>
+        <div class="callout">
+          To <strong>schemat do spawania</strong> dla ślusarza, nie zastępuje obliczeń statycznych.
+          Przed spawaniem: obmiar natury + uzgodnienie profilu (80×40 vs 100×50) z wykonawcą.
+        </div>
+      </div>
+    </section>
+
+    <section id="alternatywy">
+      <h2>9. Alternatywy konstrukcyjne — okiem konstruktora</h2>
+      <p class="section-lead">
+        Rama zig‑zag (dwa policzki piłokształtne) jest dobra i „ładna”, ale dla biegu wąskiego 110 cm,
+        wypełniającego klatkę od ściany do ściany, z zabiegiem w róg — mam kilka rozwiązań,
+        które bywają rozsądniejsze pod kątem sztywności, kosztu i ciszy chodzenia.
+      </p>
+
+      <div class="callout">
+        <strong>Moja rekomendacja nr 1:</strong> <em>belka policzkowa przyścienna + słup narożny (newel)</em>.
+        Najlepszy stosunek sztywności do ilości stali dla schodów zabiegowych w rogu — zabiegi naturalnie opierają się na słupie w narożniku i na ścianie, bez skręcania dwóch policzków zig‑zag.
+      </div>
+
+      <div class="grid-3">
+        <div class="panel">
+          <h3>A. Policzek przyścienny + słup narożny <span style="color:var(--accent)">★ zalecane</span></h3>
+          <p><strong>Co to:</strong> jedna mocna belka policzkowa przy ścianie (ceownik/blacha gięta) + pionowy słup w rogu (80×80 / 100×100). Zabiegi 3–5 wsparte na słupie i ścianie; stopnie na wspornikach.</p>
+          <ul class="clean">
+            <li><strong>+</strong> bardzo sztywne w narożniku (tam, gdzie zabieg)</li>
+            <li><strong>+</strong> mniej stali i spawów niż 2 policzki zig‑zag</li>
+            <li><strong>+</strong> lekki wygląd od strony otwartej</li>
+            <li><strong>−</strong> wymaga nośnej ściany pod policzek</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>B. Centralny mono‑kosior (belka środkowa)</h3>
+          <p><strong>Co to:</strong> jedna gruba belka pod środkiem biegu (profil 200×100 / 180×100 lub dwuteownik), stopnie wspornikowo na obu boki. W rogu belka skręca lub przechodzi w słup.</p>
+          <ul class="clean">
+            <li><strong>+</strong> najczystszy wygląd, wolna przestrzeń pod schodami</li>
+            <li><strong>+</strong> minimalne ingerowanie w ściany</li>
+            <li><strong>−</strong> zabieg = duże skręcanie belki (torsja) → gruby profil / słup w rogu</li>
+            <li><strong>−</strong> droższa gruba belka i precyzja</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>C. Żelbet (monolit lub prefabrykat)</h3>
+          <p><strong>Co to:</strong> płyta biegowa + zabiegi z betonu zbrojonego, oparta na ścianach i wieńcu stropu; wykończenie deską 40 mm na kleju/legarach.</p>
+          <ul class="clean">
+            <li><strong>+</strong> najcichsze i najtrwalsze, niepalne, „murowana” sztywność</li>
+            <li><strong>+</strong> zero drgań i klawiszowania stopni</li>
+            <li><strong>−</strong> ciężar → sprawdzić nośność ścian/stropu i fundament startu</li>
+            <li><strong>−</strong> szalunek/robota mokra, dłuższy proces</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>D. Dwie proste belki policzkowe (nie zig‑zag)</h3>
+          <p><strong>Co to:</strong> dwa ukośne policzki (ceownik/blacha) pod stopniami, stopnie na kątownikach; wersja „tańsza w warsztacie” niż piłokształtna.</p>
+          <ul class="clean">
+            <li><strong>+</strong> proste cięcie i spawanie, tania robocizna</li>
+            <li><strong>+</strong> sprawdzony klasyk</li>
+            <li><strong>−</strong> ukośne policzki widoczne, mniej „designerskie”</li>
+            <li><strong>−</strong> zabieg wymaga dorobienia ramek klinów</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>E. System skręcany (modułowy, bez spawania)</h3>
+          <p><strong>Co to:</strong> moduły stopni na wspornikach skręcane śrubami do belki/ściany; montaż „na sucho” w domu.</p>
+          <ul class="clean">
+            <li><strong>+</strong> brak spawania i iskier w wykończonym wnętrzu</li>
+            <li><strong>+</strong> demontowalne, regulowane, czysty montaż</li>
+            <li><strong>−</strong> droższe komponenty / okucia</li>
+            <li><strong>−</strong> zabieg na zamówienie (nietypowe moduły)</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>F. Policzkowe drewniane / dylowane</h3>
+          <p><strong>Co to:</strong> tradycyjne policzki z drewna klejonego, stopnie w wpustach; ewentualnie stopnie wspornikowe z belki ściennej.</p>
+          <ul class="clean">
+            <li><strong>+</strong> najcieplejsze, stolarsko „pod klucz”</li>
+            <li><strong>+</strong> spójne z deską 40 mm</li>
+            <li><strong>−</strong> zabieg w drewnie = wymagająca stolarka</li>
+            <li><strong>−</strong> większe przekroje policzków „zjadają” szerokość 110 cm</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:1rem">
+        <h3>Szybkie porównanie</h3>
+        <table>
+          <thead>
+            <tr><th>Rozwiązanie</th><th>Sztywność w zabiegu</th><th>Cisza chodzenia</th><th>Koszt</th><th>Ingerencja w ściany</th><th>Kiedy wybrać</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Zig‑zag (obecne)</td><td>dobra</td><td>średnia</td><td>średni</td><td>średnia</td><td>gdy chcemy efekt ze zdjęcia</td></tr>
+            <tr class="top"><td>A. Policzek + słup narożny</td><td>bardzo dobra</td><td>dobra</td><td>średni</td><td>tak (1 ściana)</td><td>rozsądny standard dla zabiegu w róg</td></tr>
+            <tr><td>B. Mono‑kosior środkowy</td><td>średnia (torsja)</td><td>średnia</td><td>wyższy</td><td>mała</td><td>gdy liczy się „lekki” wygląd</td></tr>
+            <tr><td>C. Żelbet</td><td>maksymalna</td><td>najlepsza</td><td>wyższy</td><td>duża (ciężar)</td><td>mury nośne, priorytet cisza/trwałość</td></tr>
+            <tr><td>D. Proste policzki</td><td>dobra</td><td>średnia</td><td>niższy</td><td>tak</td><td>budżet, prosty warsztat</td></tr>
+            <tr><td>E. Skręcany</td><td>dobra</td><td>dobra</td><td>wyższy</td><td>tak</td><td>brak spawania we wnętrzu</td></tr>
+            <tr><td>F. Drewno policzkowe</td><td>dobra</td><td>dobra</td><td>średni/wyższy</td><td>tak</td><td>ciepły, stolarski charakter</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout warn">
+        <strong>Werdykt dla Twojego przypadku</strong> (110 cm, zabieg w róg, pełne stopnie z podstopnicami, ściany do mocowania):
+        jeśli ściany są nośne — <strong>wariant A</strong> (policzek przyścienny + słup narożny) jako sensowny standard,
+        albo <strong>C (żelbet)</strong>, jeśli najważniejsza jest cisza i trwałość i strop/ściany udźwigną ciężar.
+        Zig‑zag zostaw, jeśli zależy Ci na industrialnym wyglądzie ze zdjęcia.
+      </div>
+    </section>
+
+    <footer>
+      <p>
+        H = 280 cm, otwór 330×110 cm, bez podestu, zabieg w róg ściany, rama piłokształtna (profil zamknięty).
+        Plik: <span class="mono">schody-zabiegowe.html</span> — otwórz w przeglądarce i drukuj do PDF.
+      </p>
+    </footer>
+  </div>
+</body>
+</html>
